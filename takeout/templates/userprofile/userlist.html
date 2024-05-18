@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<form  method="POST">
+
+        <div><a class="btn btn-primary" href="/userprofile/useradd/">添加用户</a>
+        </div>
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">用户列表</div>
+  <!-- Table -->
+  <table class="table table-bordered">
+      <thead>
+      <th>用户ID</th>
+      <th>用户昵称</th>
+      <th>用户地址</th>
+      <th>联系电话</th>
+      <th>余额</th>
+      </thead>
+      <tbody>
+      {% for obj in query_set %}
+<tr>
+<th>{{ obj.userid }}</th>
+<th>{{ obj.username }}</th>
+<th>{{ obj.useraddress }}</th>
+<th>{{ obj.userphone}}</th>
+    <th>{{ obj.money }}</th>
+<td><a class ="btn btn-primary btn-xs" href="/userprofile/{{ obj.userid }}/userupdate/">编辑</a>
+    <a class ="btn btn-primary btn-xs" href="/userprofile/userdel/?nid={{ obj.userid}}">删除</a></td>
+</tr>
+      {% endfor %}
+      </tbody>
+  </table>
+</div>
+    </form>
+{% endblock %}

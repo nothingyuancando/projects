@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}  
+ 
+<form class="form-inline" method="post"  enctype="multipart/form-data" >
+        {% csrf_token %}
+  <div class="form-group">
+    <label for="exampleInputEmail2">请选择菜品</label>
+    <input id="type" type="text" list="foodlist" placeholder="请选择" name = "foodname">
+<datalist id="foodlist"> 
+    {% for obj in query_set1 %}
+        <option>{{ obj.foodname }}</option>
+        {% endfor %}
+</datalist>
+  </div>
+
+    <br><br><br>
+  <div class="form-group">
+    <label for="exampleInputEmail2">请选择用户</label>
+    <input id="type" type="text" list="userlist" placeholder="请选择" name = "username">
+<datalist id="userlist">
+    {% for obj in query_set2 %}
+                <option>{{ obj.username }}</option>
+        {% endfor %}
+</datalist>
+  </div><br><br><br>
+     <div class="form-group">
+    <label for="exampleInputEmail2">菜品数量</label>
+    <input type="text" class="form-control" placeholder="" name="sums">
+  </div><br><br><br>
+ <button type="submit" class="btn btn-default">创建订单</button>
+</form>
+{% endblock %}

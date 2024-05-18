@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      background: url('https://sz-now.com/wp-content/uploads/2021/02/demae-delivery-2-1024x768.jpg') no-repeat;
+      background-size: 100% 130%;
+    }
+
+    #login_box {
+      width: 20%;
+      height: 400px;
+      background-color: #00000000;
+      margin: auto;
+      margin-top: 10%;
+      text-align: center;
+      border-radius: 10px;
+      padding: 50px 50px;
+    }
+
+    h2 {
+      color: #ffffff90;
+      margin-top: 5%;
+    }
+
+    #input-box {
+      margin-top: 5%;
+    }
+
+    span {
+      color: #fff;
+    }
+
+
+
+    button {
+      margin-top: 50px;
+      width: 60%;
+      height: 30px;
+      border-radius: 10px;
+      border: 0;
+      color: #fff;
+      text-align: center;
+      line-height: 30px;
+      font-size: 15px;
+      background-image: linear-gradient(to right, #30cfd0, #330867);
+    }
+
+    #sign_up {
+      margin-top: 45%;
+      margin-left: 60%;
+    }
+
+    a {
+      color: #b94648;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="login_box">
+    <h2>码农外卖</h2>
+<form class="form-inline" method="post"  enctype="multipart/form-data" >
+
+    <div class="row">
+        <div class="col-12">
+            <br>
+            <form method="post" action=".">
+                {% csrf_token %}
+ <div class="form-group">
+    <label for="exampleInputEmail2">店铺id</label>
+    <input type="text" class="form-control" placeholder="" name="shopid">
+  </div><br>
+                 <div class="form-group">
+    <label for="exampleInputEmail2">店铺名称</label>
+    <input type="text" class="form-control" placeholder="" name="shopname">
+  </div><br>
+                 <div class="form-group">
+    <label for="exampleInputEmail2">店铺密码</label>
+    <input type="text" class="form-control" placeholder="" name="shoppassword">
+  </div><br> <div class="form-group">
+    <label for="exampleInputEmail2">店铺地址</label>
+    <input type="text" class="form-control" placeholder="" name="shopaddress">
+  </div><br> <div class="form-group">
+    <label for="exampleInputEmail2">联系电话</label>
+    <input type="text" class="form-control" placeholder="" name="shopphone">
+  </div><br> <div class="form-group">
+    <label for="exampleInputEmail2">营业时间</label>
+    <input type="text" class="form-control" placeholder="" name="worktimes">
+  </div><br>
+  <button type="submit" class="btn btn-default">创建店铺</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

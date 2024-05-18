@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+            <div><a class="panel-heading">更新菜品</a>
+                
+   <form class="form-inline" method="post"  enctype="multipart/form-data" >
+   
+        {% csrf_token %}
+        
+ <br><br><br>
+        
+          <div class="form-group">
+    <label for="exampleInputName2">菜名</label>
+    <input type="text" class="form-control"  placeholder="" name="foodname" value="{{ row_object.foodname }}">
+  </div>
+      <div class="form-group">
+    <label for="exampleInputName2">菜品价格</label>
+    <input type="text" class="form-control"  placeholder="" name="foodprice" value="{{ row_object.foodprice }}">
+  </div>
+      <div class="form-group">
+    <label for="exampleInputName2">菜品描述</label>
+    <input type="text" class="form-control"  placeholder="" name="describle" value="{{ row_object.describ }}">
+  </div>
+  <button type="submit" class="btn btn-default">更新菜品</button>
+</form>
+
+
+
+
+{% endblock %}
+
+
+

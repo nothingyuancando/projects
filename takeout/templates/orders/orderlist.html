@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<form  method="POST">
+
+        <div><a class="btn btn-primary" href="/orders/orderadd/">添加订单</a>
+        </div>
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">订单列表</div>
+  <!-- Table -->
+  <table class="table table-bordered">
+      <thead>
+      <th>订单ID</th>
+      <th>菜品名称</th>
+      <th>用户名称</th>
+      <th>配送地址</th>
+      <th>商家地址</th>
+      <th>制作商家</th>
+      <th>单价</th>
+      <th>数量</th>
+      <th>总价</th>
+      </thead>
+      <tbody>
+      {% for obj in query_set %}
+<tr>
+<th>{{ obj.orderid}}</th>
+    <th>{{ obj.foodname }}</th>
+<th>{{ obj.username }}</th>
+<th>{{ obj.useraddresss }}</th>
+    <th>{{ obj.shopaddress }}</th>
+    <th>{{ obj.shopname }}</th>
+<th>{{ obj.foodprice}}</th>
+<th>{{ obj.amounts }}</th>
+<th>{{ obj.totalmoney }}</th>
+</tr>
+      {% endfor %}
+      </tbody>
+  </table>
+</div>
+    </form>
+{% endblock %}
+

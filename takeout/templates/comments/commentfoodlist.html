@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    
+
+    
+<form  method="POST">
+
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">评价表</div>
+  <!-- Table -->
+  <table class="table table-bordered">
+      <thead>
+      <th>用户</th>
+      <th>菜品</th>
+      <th>评价内容</th>
+      </thead>
+      <tbody>
+      {% for obj in query_set %}
+<tr>
+
+<th>{{ obj.commentuser }}</th>
+<th>{{ obj.commentfood }}</th>
+<th>{{ obj.commentbody}}</th>
+<td><a class ="btn btn-primary btn-xs" href="/comments/{{ obj.commentid }}/commentupdate/">编辑</a>
+    <a class ="btn btn-primary btn-xs" href="/comments/commentdel/?nid={{ obj.commentid }}">删除</a></td>
+</tr>
+      {% endfor %}
+      </tbody>
+  </table>
+</div>
+    </form>
+{% endblock %}

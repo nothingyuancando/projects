@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+        <div><a class="panel-heading">更新用户信息</a>
+    <form class="form-inline" method="post">
+        {% csrf_token %}
+      <div class="form-group">
+    <label for="exampleInputName2">更改昵称</label>
+    <input type="text" class="form-control"  placeholder="" name="username" value="{{ row_object.username}}">
+  </div>
+
+      <div class="form-group">
+    <label for="exampleInputName2">更改地址</label>
+    <input type="text" class="form-control"  placeholder="" name="useraddress" value="{{ row_object.useraddress}}">
+  </div>
+      <div class="form-group">
+    <label for="exampleInputName2">更改电话</label>
+    <input type="text" class="form-control"  placeholder="" name="userphone" value="{{ row_object.userphone}}">
+  </div>
+             <div class="form-group">
+    <label for="exampleInputName2">更改余额</label>
+    <input type="text" class="form-control"  placeholder="" name="money" value="{{ row_object.money}}">
+  </div>
+  <button type="submit" class="btn btn-default">更新信息</button>
+</form>
+    </div>
+
+
+
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<form  method="POST">
+
+        <div><a class="btn btn-primary" href="/app/shopadd/">添加商家</a>
+        </div>
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">商家列表</div>
+  <!-- Table -->
+  <table class="table table-bordered">
+      <thead>
+      <th>店铺ID</th>
+      <th>店铺名称</th>
+      <th>店铺地址</th>
+      <th>联系电话</th>
+      <th>工作时间</th>
+      <th>营业额</th>
+      </thead>
+      <tbody>
+      {% for obj in query_set %}
+<tr>
+<th>{{ obj.shopid }}</th>
+<th>{{ obj.shopname }}</th>
+<th>{{ obj.shopaddress }}</th>
+<th>{{ obj.shopphone}}</th>
+    <th>{{ obj.worktime}}</th>
+<th>{{ obj.getmoney }}</th>
+<td><a class ="btn btn-primary btn-xs" href="/app/{{ obj.shopid }}/shopupdate/">编辑</a>
+    <a class ="btn btn-primary btn-xs" href="/app/shopdelete/?nid={{ obj.shopid}}">删除</a>
+    <a class ="btn btn-primary btn-xs" href="/app/{{ obj.shopid }}/shopfoodlist/">查看菜单</a></td>
+</tr>
+      {% endfor %}
+      </tbody>
+  </table>
+</div>
+    </form>
+{% endblock %}

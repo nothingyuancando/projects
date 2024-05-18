@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form class="form-inline" method="post"  enctype="multipart/form-data" >
+        {% csrf_token %}
+<div class="form-group">
+        <label for="avatar">上传菜品图片</label>
+        <input type="file" class="form-control-file" name="foodtupian" id="avatar">
+    </div><br><br><br>
+          <div class="form-group">
+    <label for="exampleInputName2">菜名</label>
+    <input type="text" class="form-control"  placeholder="" name="foodname">
+  </div><br><br><br>
+      <div class="form-group">
+    <label for="exampleInputName2">菜品价格</label>
+    <input type="text" class="form-control"  placeholder="" name="foodprice">
+  </div><br><br><br>
+      <div class="form-group">
+    <label for="exampleInputName2">菜品描述</label>
+    <input type="text" class="form-control"  placeholder="" name="describle">
+  </div><br><br><br>
+        
+          <div class="form-group">
+    <label for="exampleInputEmail2">请选择所属商家</label>
+    <input id="type" type="text" list="shoplist" placeholder="请选择" name = "shopname">
+<datalist id="shoplist">
+    {% for obj in query_set %}
+                <option>{{ obj.shopname}}</option>
+        {% endfor %}
+</datalist>
+  </div><br><br><br>
+  <button type="submit" class="btn btn-default">上架菜品</button>
+</form>
+{% endblock %}
+
+
+
+
+

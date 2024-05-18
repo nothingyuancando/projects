@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+        <div><a class="panel-heading">更新商家信息</a>
+    <form class="form-inline" method="post">
+        {% csrf_token %}
+          <div class="form-group">
+    <label for="exampleInputName2">店铺名称</label>
+    <input type="text" class="form-control"  placeholder="" name="shopname" value="{{ row_object.shopname}}">
+  </div><br>
+      <div class="form-group">
+    <label for="exampleInputName2">店铺地址</label>
+    <input type="text" class="form-control"  placeholder="" name="shopaddress" value="{{ row_object.shopaddress }}">
+  </div><br>
+      <div class="form-group">
+    <label for="exampleInputName2">联系电话</label>
+    <input type="text" class="form-control"  placeholder="" name="shopphone" value="{{ row_object.shopphone }}">
+  </div><br>
+            <div class="form-group">
+    <label for="exampleInputName2">营业时间</label>
+    <input type="text" class="form-control"  placeholder="" name="worktime" value="{{ row_object.worktime}}">
+  </div><br>
+        
+  <button type="submit" class="btn btn-default">更新商家</button>
+</form>
+    </div>
+
+
+
+{% endblock %}

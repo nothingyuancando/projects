@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+    <form class="form-inline" method="post"  enctype="multipart/form-data" >
+
+        {% csrf_token %}
+   <div class="form-group">
+    <label for="exampleInputEmail2">用户名称</label>
+    <input type="text" class="form-control" placeholder="" name="username">
+  </div><br>
+          <div class="form-group">
+    <label for="exampleInputEmail2">联系电话</label>
+    <input type="text" class="form-control" placeholder="" name="userphone">
+  </div><br>
+          <div class="form-group">
+    <label for="exampleInputEmail2">配送地址</label>
+    <input type="text" class="form-control" placeholder="" name="useraddress">
+  </div><br>
+          <div class="form-group">
+    <label for="exampleInputEmail2">用户密码</label>
+    <input type="text" class="form-control" placeholder="" name="userpwd">
+  </div><br>
+
+  <button type="submit" class="btn btn-default">创建用户</button>
+</form>
+
+{% endblock %}
