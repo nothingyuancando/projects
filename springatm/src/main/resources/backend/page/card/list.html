@@ -94,7 +94,7 @@
                             class="blueBug"
                             @click="statusHandle(scope.row)"
                     >
-                        {{ scope.row.isLoss == '0' ? '启用' : '停用' }}
+                        {{ scope.row.isLoss == '0' ? '挂失' : '启用' }}
                     </el-button>
                     <el-button
                             type="text"
@@ -196,48 +196,25 @@
             },
 
 
-            //状态更改
+            //状态修改
             statusHandle (row) {
-                let params = {}
-                if (typeof row === 'string' ) {
-                    if (this.checkList.length === 0) {
-                        this.$message.error('批量操作，请先勾选操作卡！')
-                        return false
-                    }
-                    params.id = this.checkList.join(',')
-                    params.status = row
-                } else {
-                    params.id = row.id
-                    params.status = row.status ? '0' : '1'
-                }
-                this.dishState = params
-                this.$confirm('确认更改该卡状态?', '提示', {
+                this.id = row.id
+                this.isLoss = row.isLoss
+                this.$confirm('确认调整该账号的状态?', '提示', {
                     'confirmButtonText': '确定',
                     'cancelButtonText': '取消',
                     'type': 'warning'
                 }).then(() => {
-                    // 起售停售---批量起售停售接口
-                    CardStatusByStatus(this.dishState).then(res => {
-                        if (res.code === 1) {
-                            this.$message.success('卡状态已经更改成功！')
+                    enableOrDisableCard({ 'id': this.id, 'isLoss': !this.isLoss ? 1 : 0 }).then(res => {
+                        if (String(res.code) === '1') {
+                            this.$message.success('账号状态更改成功！')
                             this.handleQuery()
-                        } else {
-                            this.$message.error(res.msg || '操作失败')
                         }
                     }).catch(err => {
                         this.$message.error('请求出错了：' + err)
                     })
                 })
             },
-
-            // // 全部操作
-            // handleSelectionChange (val){
-            //     let checkArr = []
-            //     val.forEach((n) => {
-            //         checkArr.push(n.id)
-            //     })
-            //     this.checkList = checkArr
-            // },
             handleSizeChange (val) {
                 this.pageSize = val
                 this.init()

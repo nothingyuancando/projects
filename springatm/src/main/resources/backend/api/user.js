@@ -6,16 +6,8 @@ function getUserList (params) {
     })
 }
 
-// 修改---启用禁用接口
-function enableOrDisableUser (params) {
-    return $axios({
-        url: '/user',
-        method: 'put',
-        data: { ...params }
-    })
-}
 
-// 新增---添加员工
+// 新增
 function addUser (params) {
     return $axios({
         url: '/user',
@@ -24,7 +16,7 @@ function addUser (params) {
     })
 }
 
-// 修改---添加员工
+// 修改
 function editUser (params) {
     return $axios({
         url: '/user',

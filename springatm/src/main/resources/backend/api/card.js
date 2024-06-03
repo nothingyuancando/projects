@@ -6,16 +6,8 @@ function getCardPage (params) {
     })
 }
 
-// 修改---启用禁用接口
-function enableOrDisableUser (params) {
-    return $axios({
-        url: '/card',
-        method: 'put',
-        data: { ...params }
-    })
-}
 
-// 新增---添加员工
+// 新增
 function addCard (params) {
     return $axios({
         url: '/card',
@@ -24,7 +16,7 @@ function addCard (params) {
     })
 }
 
-// 修改---添加员工
+// 修改
 function editCard (params) {
     return $axios({
         url: '/card',
@@ -45,5 +37,13 @@ const deleteCard = (ids) => {
         url: '/card',
         method: 'delete',
         params: { ids }
+    })
+}
+
+function enableOrDisableCard (params) {
+    return $axios({
+        url: '/card/switch',
+        method: 'put',
+        data: { ...params }
     })
 }

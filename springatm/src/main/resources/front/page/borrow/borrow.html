@@ -59,8 +59,6 @@
 <script src="../../plugins/axios/axios.min.js"></script>
 <script src="../../js/request.js"></script>
 <script src="../../api/card.js"></script>
-<script src="../../js/validate.js"></script>
-<script src="../../js/index.js"></script>
 <script>
     new Vue({
         el: '#card-add-app',
@@ -122,15 +120,15 @@
                         this.$message.error(res.msg || '操作失败')
                     }
                 })
-                queryCardById(this.ruleForm.toNumber).then(res => {
-                    console.log(res)
-                    if (String(res.code) === '1') {
-                        console.log(res.data)
-                        this.ruleForm = res.data
-                    } else {
-                        this.$message.error(res.msg || '操作失败')
-                    }
-                })
+                // queryCardById(this.ruleForm.toNumber).then(res => {
+                //     console.log(res)
+                //     if (String(res.code) === '1') {
+                //         console.log(res.data)
+                //         this.ruleForm = res.data
+                //     } else {
+                //         this.$message.error(res.msg || '操作失败')
+                //     }
+                // })
 
             },
             submitForm (formName,st) {
@@ -143,7 +141,7 @@
                         }
                         tradeCard(params).then(res => {
                             if (res.code === 1) {
-                                this.$message.success('存款成功！')
+                                this.$message.success('转账成功！')
                                 this.goBack()
                             } else {
                                 this.$message.error(res.msg || '操作失败')

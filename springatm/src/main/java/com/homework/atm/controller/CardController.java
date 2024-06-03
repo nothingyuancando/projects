@@ -73,7 +73,7 @@ public class CardController {
 
     @PostMapping
     public R<String> save(HttpServletRequest request, @RequestBody Card card){
-        log.info("new user info{}",card.toString());
+
         cardService.save(card);
         return R.success("新增卡success");
 
@@ -122,8 +122,6 @@ public class CardController {
                 trade.setNumber(card.getNumber());
                 tradeService.save(trade);
             }
-
-
 
 
         cardService.updateById(card);
@@ -234,7 +232,18 @@ public class CardController {
         return R.success("转账成功");
     }
 
+    @PutMapping("/switch")
+    public R<String> isloss(HttpServletRequest request,@RequestBody Card card){
 
+        LambdaQueryWrapper<Card> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Card::getId,card.getId());
+        Card card1 = cardService.getOne(queryWrapper);
+        card1.setIsLoss(card.getIsLoss());
+        cardService.updateById(card1);
+
+        return  R.success("更新成功");
+
+}
 
 
 }

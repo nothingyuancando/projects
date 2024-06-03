@@ -4,7 +4,6 @@ package com.homework.atm.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.homework.atm.common.R;
-import com.homework.atm.dto.UserDto;
 import com.homework.atm.entity.Employee;
 import com.homework.atm.entity.User;
 import com.homework.atm.service.UserService;
@@ -77,12 +76,12 @@ public class UserController {
 
     @GetMapping("/{id}")
     public R<User> getById(@PathVariable int id){
-        log.info("根据id查询员工信息...");
+        log.info("根据id查询用户信息...");
         User user = userService.getById(id);
         if(user != null){
             return R.success(user);
         }
-        return R.error("没有查询到对应员工信息");
+        return R.error("没有查询到对应用户信息");
     }
 
 }

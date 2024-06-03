@@ -15,19 +15,3 @@ const getTradePage = (params) => {
     })
 }
 
-// 查看接口
-const queryTradeDetailById = (id) => {
-    return $axios({
-        url: `/tradeDetail/${id}`,
-        method: 'get'
-    })
-}
-
-// // 取消，派送，完成接口
-// const editOrderDetail = (params) => {
-//     return $axios({
-//         url: '/order',
-//         method: 'put',
-//         data: { ...params }
-//     })
-// }
