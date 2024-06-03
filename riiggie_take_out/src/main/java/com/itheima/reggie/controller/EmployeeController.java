@@ -29,9 +29,9 @@ public class EmployeeController {
     @PostMapping("/login")
     public R<Employee> login(HttpServletRequest request, @RequestBody Employee employee){
 
-    //MD5加密
-    String password = employee.getPassword();
-    password = DigestUtils.md5DigestAsHex(password.getBytes());
+        //MD5加密
+        String password = employee.getPassword();
+        password = DigestUtils.md5DigestAsHex(password.getBytes());
 
     //查数据库
      LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
@@ -43,9 +43,9 @@ public class EmployeeController {
             return R.error("登录失败");
         }
         //比对密码
-        if(!password.equals(emp.getPassword())){
-            return R.error("密码错误");
-        }
+            if(!password.equals(emp.getPassword())){
+                return R.error("密码错误");
+            }
 
         //查看状态
         if(emp.getStatus()==0){

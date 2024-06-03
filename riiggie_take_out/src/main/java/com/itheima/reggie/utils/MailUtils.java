@@ -16,7 +16,7 @@ import javax.mail.internet.MimeMessage.RecipientType;
 
 public class MailUtils {
     public static void main(String[] args) throws MessagingException {
-        //可以在这里直接测试方法，填自己的邮箱即可
+        //在这里直接测试方法
         sendTestMail("1579035512@qq.com", new MailUtils().achieveCode());
     }
 
@@ -56,11 +56,11 @@ public class MailUtils {
         message.setSubject(" 邮件测试");
         // 设置邮件的内容体
         message.setContent("尊敬的用户:你好!\n注册验证码为:" + code + "(有效期为一分钟,请勿告知他人)", "text/html;charset=UTF-8");
-        // 最后当然就是发送邮件啦
+        //发送邮件
         Transport.send(message);
     }
 
-    public static String achieveCode() {  //由于数字 1 、 0 和字母 O 、l 有时分不清楚，所以，没有数字 1 、 0
+    public static String achieveCode() {  //编辑验证码
         String[] beforeShuffle = new String[]{"2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F",
                 "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a",
                 "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v",

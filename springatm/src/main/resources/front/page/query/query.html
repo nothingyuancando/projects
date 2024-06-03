@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+    <link rel="stylesheet" href="../../styles/common.css" />
+    <link rel="stylesheet" href="../../styles/page.css" />
+</head>
+<body>
+<div class="dashboard-container" id="card-app">
+    <div class="container">
+        <el-table
+                :data="tableData"
+                stripe
+                class="tableBox"
+        >
+
+
+            <el-table-column
+                    prop="moneyType"
+                    label="货币类型"
+            ></el-table-column>
+
+            <el-table-column label="余额">
+                <template slot-scope="scope">
+                    <span style="margin-right: 10px;">￥{{ scope.row.balance }}</span>
+                </template>
+            </el-table-column>
+
+
+            <el-table-column label="是否冻结">
+                <template slot-scope="scope">
+                    <span style="margin-right: 10px;">{{ scope.row.isDelete == '0' ? '否' : '是' }}</span>
+                </template>
+            </el-table-column>
+
+        </el-table>
+
+    </div>
+</div>
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="../../plugins/vue/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="../../plugins/element-ui/index.js"></script>
+<!-- 引入axios -->
+<script src="../../plugins/axios/axios.min.js"></script>
+<script src="../../js/request.js"></script>
+<script src="../../api/card.js"></script>
+<script>
+    new Vue({
+        el: '#card-app',
+        data() {
+            return {
+                input: '',
+                tableData : [],
+                checkList: []
+            }
+        },
+        computed: {},
+        created() {
+            const customerInfo = window.localStorage.getItem('customerInfo')
+            if (customerInfo) {
+                this.customerInfo = JSON.parse(customerInfo)
+
+            }
+            this.init()
+        },
+        mounted() {
+        },
+        methods: {
+            async init () {
+
+                const st = this.customerInfo.number
+                await getCardPage(st).then(res => {
+                    if (String(res.code) === '1') {
+                        this.tableData = res.data||[]
+                    }
+                }).catch(err => {
+                    this.$message.error('请求出错了：' + err)
+                })
+            },
+
+
+        }
+    })
+</script>
+</body>
+</html>

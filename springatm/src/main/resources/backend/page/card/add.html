@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+    <link rel="stylesheet" href="../../styles/common.css" />
+    <link rel="stylesheet" href="../../styles/page.css" />
+    <style>
+        .selectInput {
+            position: relative;
+            width: 100%;
+            min-width: 100px;
+        }
+        .selectInput .flavorSelect {
+            position: absolute;
+            width: 100%;
+            padding: 0 10px;
+            border-radius: 3px;
+            border: solid 1px #FF903D;
+            line-height: 30px;
+            text-align: center;
+            background: #fff;
+            top: 50px;
+            z-index: 99;
+        }
+        .selectInput .flavorSelect .items {
+            cursor: pointer;
+            display: inline-block;
+            width: 100%;
+            line-height: 35px;
+            border-bottom: solid 1px #f4f4f4;
+            color: #666;
+        }
+        .selectInput .flavorSelect .none {
+            font-size: 14px;
+        }
+
+        #food-add-app .uploadImg .el-form-item__label::before{
+            content: '*';
+            color: #F56C6C;
+            margin-right: 4px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="addBrand-container" id="card-add-app">
+    <div class="container">
+        <el-form
+                ref="ruleForm"
+                :model="ruleForm"
+                :rules="rules"
+                :inline="true"
+                label-width="180px"
+                class="demo-ruleForm"
+        >
+            <div>
+                <el-form-item
+                        label="卡号:"
+                        prop="number"
+                >
+                    <el-input
+                            v-model="ruleForm.number"
+                            placeholder="卡号"
+                            maxlength="20"
+                    />
+                </el-form-item>
+                <el-form-item
+                        label="开户人姓名:"
+                        prop="user"
+                >
+                    <el-select
+                            v-model="ruleForm.userName"
+                            placeholder="请选择"
+                    >
+                        <el-option v-for="(item,index) in cardList" :key="index" :label="item.username" :value="item.username" />
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item
+                        label="开户人身份证:"
+                        prop="number"
+                >
+                    <el-select
+                            v-model="ruleForm.userPid"
+                            placeholder="请选择"
+                    >
+                        <el-option v-for="(item,index) in cardList" :key="index" :label="item.pid" :value="item.pid" />
+                    </el-select>
+                </el-form-item>
+
+            </div>
+
+            <div>
+                <el-form-item
+                        label="货币类型:"
+                        prop="deposit_id"
+                >
+                    <el-input
+                            v-model="ruleForm.moneyType"
+                            placeholder="请设置货币类型"
+                    />
+                </el-form-item>
+            </div>
+
+            <div>
+                <el-form-item
+                        label="开户金额:"
+                        prop="open_money"
+                >
+                    <el-input
+                            v-model="ruleForm.openMoney"
+                            placeholder="请设置开户金额"
+                    />
+                </el-form-item>
+            </div>
+
+            <div>
+                <el-form-item
+                        label="密码:"
+                        prop="password"
+                >
+                    <el-input
+                            v-model="ruleForm.password"
+                            placeholder="请设置密码"
+                    />
+                </el-form-item>
+            </div>
+
+            <div class="subBox address">
+                <el-form-item>
+                    <el-button @click="goBack()">
+                        取消
+                    </el-button>
+                    <el-button
+                            type="primary"
+                            @click="submitForm('ruleForm')"
+                    >
+                        保存
+                    </el-button>
+                </el-form-item>
+            </div>
+        </el-form>
+    </div>
+</div>
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="../../plugins/vue/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="../../plugins/element-ui/index.js"></script>
+<!-- 引入axios -->
+<script src="../../plugins/axios/axios.min.js"></script>
+<script src="../../js/request.js"></script>
+<script src="../../js/validate.js"></script>
+<script src="../../js/index.js"></script>
+<script src="../../api/card.js"></script>
+<script>
+    new Vue({
+        el: '#card-add-app',
+        data() {
+            return {
+                id: '',
+                restKey: 0,
+                textarea: '',
+                value: '',
+                actionType: '',
+                cardList: [],
+                vueRest : '1',
+                index : 0,
+                inputStyle  : {'flex':1},
+                ruleForm  : {
+                    'number': '',
+                    'openMoney': '',
+                    'moneyType': '',
+                    'userName': '',
+                    'userPid': '',
+                    'password':'',
+                    'balance':'',
+                },
+                mak: false
+            }
+        },
+        computed: {
+            rules () {
+                return {
+                    'number': [
+                        {'required': true, 'message': '请填写卡号', 'trigger': 'blur'}
+                    ],
+                    'openMoney': [
+                        {
+                            'required': true,
+                            // 'message': '请填写菜品价格',
+                            validator: (rules, value, callback) => {
+                                if (!value) {
+                                    callback(new Error('请填写开户金额'))
+                                } else {
+                                    const reg = /^\d+(\.\d{0,2})?$/
+                                    if (!reg.test(value)) {
+                                        callback(new Error('开户金额只能为数字,且最多保留两位小数'))
+                                    }
+                                }
+                            },
+                            'trigger': 'blur'
+                        }
+                    ],
+                }
+            }
+        },
+        created() {
+            this.getCardList()
+
+            this.id = requestUrlParam('id')
+            this.actionType = this.id ? 'edit' : 'add'
+            if (this.id) {
+                this.init()
+            }
+        },
+        mounted() {
+        },
+        methods: {
+            async init () {
+                queryCardById(this.id).then(res => {
+                    console.log(res)
+                    if (String(res.code) === '1') {
+                        this.ruleForm = { ...res.data }
+                        this.ruleForm.openMoney = String(res.data.openMoney/100)
+
+                    } else {
+                        this.$message.error(res.msg || '操作失败')
+                    }
+                })
+            },
+            // 获取用户
+            getCardList () {
+                urlid = getQueryVariable("id")
+                getUser(urlid).then(res => {
+                    if (res.code === 1) {
+                        this.cardList = res.data
+                    } else {
+                        this.$message.error(res.msg || '操作失败')
+                    }
+                })
+            },
+
+            submitForm(formName, st) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        let params = {...this.ruleForm}
+                        params.balance = this.ruleForm.openMoney
+
+                            delete params.id
+                            addCard(params).then(res => {
+                                if (res.code === 1) {
+                                    this.$message.success('卡添加成功！')
+                                    if (!st) {
+                                        this.goBack()
+                                    } else {
+
+                                        this.ruleForm = {
+                                            'userName': '',
+                                            'id': '',
+                                            'moneyType': '',
+                                            'code': '',
+                                            'isLoss': '',
+                                            'description': '',
+                                        }
+                                    }
+                                } else {
+                                    this.$message.error(res.msg || '操作失败')
+                                }
+                            }).catch(err => {
+                                this.$message.error('请求出错了：' + err)
+                            })
+
+                    }
+                        else {
+                        return false
+                    }
+                })
+            },
+
+            goBack(){
+                window.parent.menuHandle({
+                    id: '4',
+                    url: '/backend/page/card/list.html',
+                    name: '卡管理'
+                },false)
+            }
+        }
+    })
+</script>
+</body>
+</html>
+
+
+
