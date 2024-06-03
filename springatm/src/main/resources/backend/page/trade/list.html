@@ -70,7 +70,7 @@
             ></el-table-column>
 
             <el-table-column
-                    prop="tradeDate"
+                    prop="createTime"
                     label="交易日期"
             ></el-table-column>
 
@@ -89,7 +89,7 @@
                             type="text"
                             size="small"
                             class="blueBug"
-                            @click="addUserHandle(scope.row.id)"
+                            @click="queryHandle(scope.row.id)"
                             :class="{notAdmin:user !== 'admin'}"
                     >
                         查看详细信息
@@ -159,46 +159,18 @@
                 this.init();
             },
 
-            getTradeType (row) {
-                let str = ''
-                switch(row){
-                    case '0':
-                        str =  '存钱'
-                        break;
-                    case '1':
-                        str =  '取钱'
-                        break;
-                    case '2':
-                        str =  '转账'
-                        break;
 
-                }
-                return str
-            },
             // 添加
-            addUserHandle (st) {
-                if (st === 'add'){
+            queryHandle (st) {
+
                     window.parent.menuHandle({
                         id: '2',
-                        url: '/backend/page/user/add.html',
-                        name: '添加用户'
+                        url: '/backend/page/trad/query.html?id='+st,
+                        name: '查看详细信息'
                     },true)
-                } else {
-                    window.parent.menuHandle({
-                        id: '2',
-                        url: '/backend/page/user/edit.html?id='+st,
-                        name: '修改用户'
-                    },true)
-                }
+
             },
 
-            addCardHandle(st){
-                window.parent.menuHandle({
-                    id: '2',
-                    url: '/backend/page/card/add.html?id='+st,
-                    name: '添加银行卡'
-                },true)
-            },
 
 
             handleSizeChange (val) {

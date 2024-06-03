@@ -22,13 +22,13 @@ public class Card implements Serializable {
     private String moneyType;
     private String password;
 
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime openDate;
     private BigDecimal openMoney;
     private BigDecimal balance;
     private int isLoss;
 
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     @TableField(fill = FieldFill.INSERT_UPDATE)

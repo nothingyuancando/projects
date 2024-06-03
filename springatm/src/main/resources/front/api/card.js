@@ -28,7 +28,7 @@ function editCard (params) {
 // 修改页面反查详情接口
 function queryCardById (id) {
     return $axios({
-        url: `/card/${id}`,
+        url: `/card/number/${id}`,
         method: 'get'
     })
 }

@@ -4,21 +4,20 @@ package com.homework.atm.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.homework.atm.common.R;
-import com.homework.atm.entity.Card;
-import com.homework.atm.entity.Employee;
-import com.homework.atm.entity.Transfer;
-import com.homework.atm.entity.User;
+import com.homework.atm.entity.*;
 import com.homework.atm.service.CardService;
 import com.homework.atm.service.TradeService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.invoke.LambdaConversionException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,6 +29,7 @@ public class CardController {
     @Autowired
     private CardService cardService;
 
+    @Autowired
     private TradeService tradeService;
 
     @PostMapping("/login")
@@ -79,13 +79,6 @@ public class CardController {
 
     }
 
-//    @PutMapping
-//    public R<String> save(@RequestBody Card card){
-//        log.info("save card{}",card.toString());
-//
-//        cardService.save(card);
-//        return R.success("save card success");
-//    }
 
     @GetMapping("/page")
     public R<Page> page(int page, int pageSize, String number){
@@ -103,7 +96,33 @@ public class CardController {
     @PutMapping
     public R<String> update(HttpServletRequest request,@RequestBody Card card){
 
-        log.info("update user info{}",card.toString());
+        log.info("update card info{}",card.toString());
+
+        LambdaQueryWrapper<Card> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Card::getNumber,card.getNumber());
+        Card emp = cardService.getOne(queryWrapper);
+        BigDecimal num1 = emp.getBalance();
+        BigDecimal num2 = card.getBalance();
+
+        int result = num1.compareTo(num2);
+        Trade trade = new Trade();
+        if(result < 0){
+            BigDecimal diff = num2.subtract(num1);
+            trade.setTradeType("存钱");
+            trade.setTradeMoney(String.valueOf(diff));
+            trade.setRemark("");
+            trade.setNumber(card.getNumber());
+            tradeService.save(trade);
+        }
+            if (result > 0) {
+                BigDecimal diff = num1.subtract(num2);
+                trade.setTradeType("取钱");
+                trade.setTradeMoney(String.valueOf(diff));
+                trade.setRemark("");
+                trade.setNumber(card.getNumber());
+                tradeService.save(trade);
+            }
+
 
 
 
@@ -137,7 +156,7 @@ public class CardController {
     }
 
     @GetMapping("/{id}")
-    public R<Card> getByNumber(@PathVariable int id){
+    public R<Card> getById(@PathVariable int id){
         log.info("根据id查询卡信息...");
 
         LambdaQueryWrapper<Card> queryWrapper = new LambdaQueryWrapper<>();
@@ -149,6 +168,21 @@ public class CardController {
         }
         return R.error("没有查询到对应卡信息");
     }
+
+    @GetMapping("/number/{id}")
+    public R<Card> getByNumber(@PathVariable String id){
+        log.info("根据id查询卡信息...");
+
+        LambdaQueryWrapper<Card> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Card::getNumber,id);
+        Card card = cardService.getOne(queryWrapper);
+
+        if(card != null){
+            return R.success(card);
+        }
+        return R.error("没有查询到对应卡信息");
+    }
+
 
 
     @PutMapping("/trade")
@@ -176,13 +210,31 @@ public class CardController {
        BigDecimal sum = balance2.add(money);
 
         card1.setBalance(diff);
-       card2.setBalance(sum);
+        card2.setBalance(sum);
 
-       cardService.updateById(card1);
-       cardService.updateById(card2);
+//       cardService.updateById(card1);
+//       cardService.updateById(card2);
 
-        return R.success("卡信息修改成功");
+       cardService.updateTrade(card1,card2);
+
+       Trade trade1 = new Trade();
+       trade1.setNumber(numher);
+       trade1.setTradeType("转账");
+       trade1.setTradeMoney(String.valueOf(money));
+       trade1.setRemark("转账给："+toNumber);
+       tradeService.save(trade1);
+
+       Trade trade2 = new Trade();
+       trade2.setNumber(toNumber);
+       trade2.setTradeMoney(String.valueOf(money));
+       trade2.setTradeType("转账");
+       trade2.setRemark("转账来自："+numher);
+       tradeService.save(trade2);
+
+        return R.success("转账成功");
     }
+
+
 
 
 }

@@ -22,7 +22,7 @@ public class User implements Serializable {
     private String pid;
 
 
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
 

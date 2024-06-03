@@ -19,8 +19,6 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
         log.info("公共字段自动填充");
         log.info(metaObject.toString());
         metaObject.setValue("createTime", LocalDateTime.now());
-        metaObject.setValue("updateTime", LocalDateTime.now());
-
         long id = Thread.currentThread().getId();
         log.info("线程id{}",id);
 
@@ -29,13 +27,6 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void updateFill(MetaObject metaObject) {
-
-        log.info("公共字段自动填充");
-        log.info(metaObject.toString());
-
-        long id = Thread.currentThread().getId();
-        log.info("线程id{}",id);
-
         metaObject.setValue("updateTime", LocalDateTime.now());
     }
 }

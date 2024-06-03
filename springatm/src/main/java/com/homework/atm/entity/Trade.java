@@ -16,8 +16,8 @@ public class Trade implements Serializable {
 
     private String number;
 
-    @TableField(fill = FieldFill.INSERT_UPDATE)
-    private LocalDateTime tradeDate;
+    @TableField(fill = FieldFill.INSERT)
+    private LocalDateTime createTime;
 
     private String tradeMoney;
 
