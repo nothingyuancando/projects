@@ -50,18 +50,13 @@ public class CardController {
         if(!password.equals(emp.getPassword())){
             return R.error("密码错误");
         }
-
-
         if(emp.getIsLoss()!=0){
             return R.error("卡被冻结");
         }
-
         //登录
         request.getSession().setAttribute("card", emp.getNumber());
         return R.success(emp);
-
     }
-
     @PostMapping("/logout")
     public R<String> logout(HttpServletRequest request){
 
@@ -89,21 +84,16 @@ public class CardController {
         log.info("queryWrapper = {}",queryWrapper);
         cardService.page(pageInfo,queryWrapper);
         return R.success(pageInfo);
-
-
     }
 
     @PutMapping
     public R<String> update(HttpServletRequest request,@RequestBody Card card){
-
         log.info("update card info{}",card.toString());
-
         LambdaQueryWrapper<Card> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Card::getNumber,card.getNumber());
         Card emp = cardService.getOne(queryWrapper);
         BigDecimal num1 = emp.getBalance();
         BigDecimal num2 = card.getBalance();
-
         int result = num1.compareTo(num2);
         Trade trade = new Trade();
         if(result < 0){
@@ -122,8 +112,6 @@ public class CardController {
                 trade.setNumber(card.getNumber());
                 tradeService.save(trade);
             }
-
-
         cardService.updateById(card);
         return R.success("卡信息修改成功");
     }
@@ -185,50 +173,35 @@ public class CardController {
 
     @PutMapping("/trade")
     public R<String> trade(HttpServletRequest request, @RequestBody Transfer transfer){
-
        String numher = transfer.getNumber();
        String toNumber = transfer.getToNumber();
        BigDecimal money = transfer.getTradeMoney();
-       BigDecimal bal = transfer.getBalance();
-
        LambdaQueryWrapper<Card> queryWrapper1 = new LambdaQueryWrapper<>();
        LambdaQueryWrapper<Card> queryWrapper2 = new LambdaQueryWrapper<>();
-
        queryWrapper1.eq(Card::getNumber,numher);
        queryWrapper2.eq(Card::getNumber,toNumber);
-
        Card card1 = cardService.getOne(queryWrapper1);
        Card card2 = cardService.getOne(queryWrapper2);
-
        log.info("card1={},card2={}",card1,card2);
        BigDecimal balance1 = card1.getBalance();
        BigDecimal balance2 = card2.getBalance();
-
        BigDecimal diff = balance1.subtract(money);
        BigDecimal sum = balance2.add(money);
-
         card1.setBalance(diff);
         card2.setBalance(sum);
-
-//       cardService.updateById(card1);
-//       cardService.updateById(card2);
-
        cardService.updateTrade(card1,card2);
-
        Trade trade1 = new Trade();
        trade1.setNumber(numher);
        trade1.setTradeType("转账");
        trade1.setTradeMoney(String.valueOf(money));
        trade1.setRemark("转账给："+toNumber);
        tradeService.save(trade1);
-
        Trade trade2 = new Trade();
        trade2.setNumber(toNumber);
        trade2.setTradeMoney(String.valueOf(money));
        trade2.setTradeType("转账");
        trade2.setRemark("转账来自："+numher);
        tradeService.save(trade2);
-
         return R.success("转账成功");
     }
 

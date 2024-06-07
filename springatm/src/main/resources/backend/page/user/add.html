@@ -102,7 +102,6 @@
     data() {
       return {
         id: '',
-        actionType : '',
         ruleForm : {
           'username': '',
           'telephone': '',
@@ -125,45 +124,28 @@
       }
     },
     created() {
-      this.id = requestUrlParam('id')
-      this.actionType = this.id ? 'edit' : 'add'
-      if (this.id) {
         this.init()
-      }
+
     },
     mounted() {
     },
     methods: {
       async init () {
-        queryEmployeeById(this.id).then(res => {
-          console.log(res)
-          if (String(res.code) === '1') {
-            console.log(res.data)
-            this.ruleForm = res.data
-            // this.ruleForm.password = ''
-          } else {
-            this.$message.error(res.msg || '操作失败')
-          }
-        })
       },
       submitForm (formName, st) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            if (this.actionType === 'add') {
+        if (formName === 'ruleForm'){
               const params = {
                 ...this.ruleForm,
               }
-              addEmployee(params).then(res => {
+              addUser(params).then(res => {
                 if (res.code === 1) {
                   this.$message.success('用户添加成功！')
                   if (!st) {
                     this.goBack()
                   } else {
                     this.ruleForm = {
-
                       'username': '',
                       'telephone': '',
-
                       'pid': '',
                       'address':'',
                     }
@@ -174,26 +156,27 @@
               }).catch(err => {
                 this.$message.error('请求出错了：' + err)
               })
-            } else {
-              const params = {
-                ...this.ruleForm,
-              }
-              editEmployee(params).then(res => {
-                if (res.code === 1) {
-                  this.$message.success('用户信息修改成功！')
-                  this.goBack()
-                } else {
-                  this.$message.error(res.msg || '操作失败')
-                }
-              }).catch(err => {
-                this.$message.error('请求出错了：' + err)
-              })
-            }
+
+              // else {
+            //   const params = {
+            //     ...this.ruleForm,
+            //   }
+            //   editUser(params).then(res => {
+            //     if (res.code === 1) {
+            //       this.$message.success('用户信息修改成功！')
+            //       this.goBack()
+            //     } else {
+            //       this.$message.error(res.msg || '操作失败')
+            //     }
+            //   }).catch(err => {
+            //     this.$message.error('请求出错了：' + err)
+            //   })
+            // }
           } else {
             console.log('error submit!!')
             return false
           }
-        })
+
       },
       goBack(){
         window.parent.menuHandle({

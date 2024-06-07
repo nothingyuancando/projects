@@ -69,28 +69,11 @@
                             maxlength="20"
                     />
                 </el-form-item>
-                <el-form-item
-                        label="开户人姓名:"
-                        prop="user"
-                >
-                    <el-select
-                            v-model="ruleForm.userName"
-                            placeholder="请选择"
-                    >
-                        <el-option v-for="(item,index) in cardList" :key="index" :label="item.username" :value="item.username" />
-                    </el-select>
+                <el-form-item label="开户人姓名:" prop="userName">
+                    <el-input v-model="userForm.username" placeholder="" maxlength="20"/>
                 </el-form-item>
-
-                <el-form-item
-                        label="开户人身份证:"
-                        prop="number"
-                >
-                    <el-select
-                            v-model="ruleForm.userPid"
-                            placeholder="请选择"
-                    >
-                        <el-option v-for="(item,index) in cardList" :key="index" :label="item.pid" :value="item.pid" />
-                    </el-select>
+                <el-form-item label="开户人身份证:" prop="userPid">
+                    <el-input v-model="userForm.pid" placeholder="" maxlength="20"/>
                 </el-form-item>
 
             </div>
@@ -166,7 +149,6 @@
                 restKey: 0,
                 textarea: '',
                 value: '',
-                actionType: '',
                 cardList: [],
                 vueRest : '1',
                 index : 0,
@@ -180,6 +162,10 @@
                     'password':'',
                     'balance':'',
                 },
+                userForm:{
+                  'username':'',
+                    'pid':'',
+                },
                 mak: false
             }
         },
@@ -192,7 +178,7 @@
                     'openMoney': [
                         {
                             'required': true,
-                            // 'message': '请填写菜品价格',
+
                             validator: (rules, value, callback) => {
                                 if (!value) {
                                     callback(new Error('请填写开户金额'))
@@ -210,47 +196,31 @@
             }
         },
         created() {
-            this.getCardList()
 
             this.id = requestUrlParam('id')
-            this.actionType = this.id ? 'edit' : 'add'
-            if (this.id) {
-                this.init()
-            }
+
+            this.init()
         },
         mounted() {
         },
         methods: {
             async init () {
-                queryCardById(this.id).then(res => {
-                    console.log(res)
+                queryUserById(this.id).then(res => {
                     if (String(res.code) === '1') {
-                        this.ruleForm = { ...res.data }
-                        this.ruleForm.openMoney = String(res.data.openMoney/100)
+                        this.userForm = { ...res.data }
+                    } else {
+                        this.$message.error(res.msg || '操作失败')
+                    }
+                })
 
-                    } else {
-                        this.$message.error(res.msg || '操作失败')
-                    }
-                })
             },
-            // 获取用户
-            getCardList () {
-                urlid = getQueryVariable("id")
-                getUser(urlid).then(res => {
-                    if (res.code === 1) {
-                        this.cardList = res.data
-                    } else {
-                        this.$message.error(res.msg || '操作失败')
-                    }
-                })
-            },
+
 
             submitForm(formName, st) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let params = {...this.ruleForm}
                         params.balance = this.ruleForm.openMoney
-
                             delete params.id
                             addCard(params).then(res => {
                                 if (res.code === 1) {

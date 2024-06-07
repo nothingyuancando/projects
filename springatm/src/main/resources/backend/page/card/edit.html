@@ -100,7 +100,6 @@
                     if (String(res.code) === '1') {
                         console.log(res.data)
                         this.ruleForm = res.data
-                        // this.ruleForm.password = ''
                     } else {
                         this.$message.error(res.msg || '操作失败')
                     }

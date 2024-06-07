@@ -11,8 +11,6 @@ import java.time.LocalDateTime;
 @Component
 @Slf4j
 public class MyMetaObjectHandler implements MetaObjectHandler {
-
-
     @Override
     public void insertFill(MetaObject metaObject) {
 
@@ -21,10 +19,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
         metaObject.setValue("createTime", LocalDateTime.now());
         long id = Thread.currentThread().getId();
         log.info("线程id{}",id);
-
-
     }
-
     @Override
     public void updateFill(MetaObject metaObject) {
         metaObject.setValue("updateTime", LocalDateTime.now());

@@ -13,19 +13,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class CardServiceImpl extends ServiceImpl<CardMapper, Card> implements CardService {
-
-
     @Autowired
     private CardService cardService;
-
-
     @Transactional
     public void updateTrade(Card card1,Card card2){
             cardService.updateById(card1);
             cardService.updateById(card2);
-
     }
-
-
-
 }

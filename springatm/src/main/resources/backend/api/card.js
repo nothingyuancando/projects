@@ -47,3 +47,19 @@ function enableOrDisableCard (params) {
         data: { ...params }
     })
 }
+
+function getUser(id){
+    return $axios({
+        url:'/user/${id}',
+        method: 'get'
+        })
+}
+
+
+// 修改页面反查详情接口
+function queryUserById (id) {
+    return $axios({
+        url: `/user/${id}`,
+        method: 'get'
+    })
+}

@@ -52,9 +52,6 @@ public class UserController {
     @PutMapping
     public R<String> update(HttpServletRequest request,@RequestBody User user){
 
-        log.info("update user info{}",user.toString());
-
-
         userService.updateById(user);
         return R.success("员工信息修改成功");
     }
