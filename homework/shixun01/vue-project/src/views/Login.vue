@@ -87,12 +87,6 @@ const rules={
   ],
 
 }
-
-
-
-
-
-
 </script>
 
 <template>

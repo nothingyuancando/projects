@@ -83,7 +83,7 @@ import avatar from '@/assets/default.png'
         <div>东软智能制造云平台用户：<strong></strong></div>
         <el-dropdown placement="bottom-end">
                     <span class="el-dropdown__box">
-                        <el-avatar :src="avatar" />
+
                         <el-icon>
                             <CaretBottom />
                         </el-icon>
@@ -100,7 +100,7 @@ import avatar from '@/assets/default.png'
       </el-header>
       <!-- 中间区域 -->
       <el-main>
-        <div style="width: 1300px; height: 600px;">
+        <div style="width: 1300px; height: 750px;">
           <router-view></router-view>
         </div>
       </el-main>

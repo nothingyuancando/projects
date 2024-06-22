@@ -9,8 +9,6 @@ return  request.get('../employee/',)
 }
 export const employeeAddService =(emoloyeeData)=>{
 
-
-
     return  request.post('../employee/',emoloyeeData)
 
 }

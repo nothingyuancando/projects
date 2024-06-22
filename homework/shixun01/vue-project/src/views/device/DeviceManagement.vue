@@ -17,9 +17,6 @@
           <el-form-item label="设备序列号">
             <el-input v-model="newDevice.serialNumber"></el-input>
           </el-form-item>
-          <el-form-item label="可生产产品">
-            <el-input v-model="newDevice.product"></el-input>
-          </el-form-item>
           <el-form-item label="产能">
             <el-input v-model="newDevice.capacity"></el-input>
           </el-form-item>
@@ -32,17 +29,19 @@
         <el-table :data="filteredDevices" style="width: 100%">
           <el-table-column prop="name" label="设备名称"></el-table-column>
           <el-table-column prop="serialNumber" label="设备序列号"></el-table-column>
-          <el-table-column prop="product" label="可生产产品"></el-table-column>
           <el-table-column prop="capacity" label="产能"></el-table-column>
           <el-table-column label="操作">
             <template #default="scope">
               <el-button @click="editDevice(scope.row)" size="mini">编辑</el-button>
-              <el-button @click="deleteDevice(scope.row.id)" size="mini" type="danger">删除</el-button>
+              <el-button @click="viewDeviceProducts(scope.row)" size="mini">查看产品</el-button>
+              <el-button @click="confirmDeleteDevice(scope.row.id)" size="mini" type="danger">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
       </div>
     </el-card>
+
+    <!-- 编辑设备弹窗 -->
     <el-dialog :visible.sync="isEditing" title="编辑设备">
       <el-form :model="editedDevice" ref="editDeviceForm" label-width="120px">
         <el-form-item label="设备名称">
@@ -50,9 +49,6 @@
         </el-form-item>
         <el-form-item label="设备序列号">
           <el-input v-model="editedDevice.serialNumber"></el-input>
-        </el-form-item>
-        <el-form-item label="可生产产品">
-          <el-input v-model="editedDevice.product"></el-input>
         </el-form-item>
         <el-form-item label="产能">
           <el-input v-model="editedDevice.capacity"></el-input>
@@ -63,22 +59,74 @@
         <el-button type="primary" @click="updateDevice">更新</el-button>
       </div>
     </el-dialog>
+
+    <!-- 查看设备关联产品弹窗 -->
+    <el-dialog :visible.sync="viewingProducts" title="设备关联产品">
+      <el-table :data="currentDeviceProducts" style="width: 100%; margin-top: 20px;">
+        <el-table-column prop="name" label="产品名称"></el-table-column>
+        <el-table-column label="操作">
+          <template #default="scope">
+            <el-button @click="confirmDeleteProduct(scope.row.id)" size="mini" type="danger">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="closeProductDialog">关闭</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 删除设备确认弹窗 -->
+    <el-dialog :visible.sync="deleteDeviceDialogVisible" title="确认删除设备">
+      <p>确定要删除设备 "{{ deletingDeviceName }}" 吗？</p>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="deleteDevice(deletingDeviceId)">确认删除</el-button>
+        <el-button @click="cancelDeleteDevice">取消</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 删除产品确认弹窗 -->
+    <el-dialog :visible.sync="deleteProductDialogVisible" title="确认删除产品">
+      <p>确定要删除产品 "{{ deletingProductName }}" 吗？</p>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="deleteProduct(deletingProductId)">确认删除</el-button>
+        <el-button @click="cancelDeleteProduct">取消</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted } from 'vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
 
 const searchQuery = ref('');
-const newDevice = ref({ name: '', serialNumber: '', product: '', capacity: '' });
+const newDevice = ref({ name: '', serialNumber: '', capacity: '' });
 const devices = ref([]);
 const isEditing = ref(false);
 const editedDevice = ref(null);
 
+const viewingProducts = ref(false);
+const currentDeviceProducts = ref([]);
+const currentDeviceId = ref(null);
+const newProduct = reactive({ name: '' });
+
+// 示例数据
+const exampleDevices = [
+  { id: 1, name: '设备1', serialNumber: 'SN001', capacity: '100' },
+  { id: 2, name: '设备2', serialNumber: 'SN002', capacity: '200' },
+  { id: 3, name: '设备3', serialNumber: 'SN003', capacity: '300' },
+];
+
+const exampleProducts = [
+  { id: 1, name: '产品A' },
+  { id: 2, name: '产品B' },
+  { id: 3, name: '产品C' },
+];
+
 const fetchDevices = async () => {
-  const deviceData = await fetch('/api/devices').then(res => res.json());
-  devices.value = deviceData;
+  // 模拟API数据获取
+  devices.value = exampleDevices;
 };
 
 const searchDevices = () => {
@@ -87,12 +135,9 @@ const searchDevices = () => {
 
 const addDevice = async () => {
   if (newDevice.value.serialNumber && !devices.value.some(d => d.serialNumber === newDevice.value.serialNumber)) {
-    await fetch('/api/devices', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newDevice.value)
-    });
-    newDevice.value = { name: '', serialNumber: '', product: '', capacity: '' };
+    // 模拟API新增设备
+    devices.value.push({ ...newDevice.value, id: devices.value.length + 1 });
+    newDevice.value = { name: '', serialNumber: '', capacity: '' };
     fetchDevices();
   } else {
     ElMessage.error('设备序列号不能为空或重复');
@@ -106,11 +151,11 @@ const editDevice = (device) => {
 
 const updateDevice = async () => {
   if (editedDevice.value.serialNumber && !devices.value.some(d => d.serialNumber === editedDevice.value.serialNumber && d.id !== editedDevice.value.id)) {
-    await fetch(`/api/devices/${editedDevice.value.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(editedDevice.value)
-    });
+    // 模拟API更新设备
+    const index = devices.value.findIndex(d => d.id === editedDevice.value.id);
+    if (index !== -1) {
+      devices.value[index] = editedDevice.value;
+    }
     cancelEdit();
     fetchDevices();
   } else {
@@ -123,26 +168,59 @@ const cancelEdit = () => {
   editedDevice.value = null;
 };
 
-const deleteDevice = async (id) => {
-  const hasOrders = await fetch(`/api/orders?deviceId=${id}`).then(res => res.json()).then(data => data.length > 0);
-  if (!hasOrders) {
-    ElMessageBox.confirm('此操作将永久删除该设备, 是否继续?', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    }).then(async () => {
-      await fetch(`/api/devices/${id}`, { method: 'DELETE' });
-      fetchDevices();
-    }).catch(() => {
-      ElMessage.info('已取消删除');
-    });
-  } else {
-    ElMessage.error('该设备已关联启动工单，不能删除');
+const confirmDeleteDevice = (deviceId) => {
+  const device = devices.value.find(d => d.id === deviceId);
+  if (device) {
+    deletingDeviceId.value = deviceId;
+    deletingDeviceName.value = device.name;
+    deleteDeviceDialogVisible.value = true;
   }
 };
 
+const deleteDevice = (deviceId) => {
+  devices.value = devices.value.filter(d => d.id !== deviceId);
+  deleteDeviceDialogVisible.value = false;
+  ElMessage.success('设备删除成功');
+};
+
+const cancelDeleteDevice = () => {
+  deleteDeviceDialogVisible.value = false;
+};
+
+const viewDeviceProducts = async (device) => {
+  currentDeviceId.value = device.id;
+  // 模拟API获取设备关联产品
+  currentDeviceProducts.value = exampleProducts.filter(p => p.id % device.id === 0);
+  viewingProducts.value = true;
+};
+
+const confirmDeleteProduct = (productId) => {
+  const product = currentDeviceProducts.value.find(p => p.id === productId);
+  if (product) {
+    deletingProductId.value = productId;
+    deletingProductName.value = product.name;
+    deleteProductDialogVisible.value = true;
+  }
+};
+
+const deleteProduct = (productId) => {
+  currentDeviceProducts.value = currentDeviceProducts.value.filter(p => p.id !== productId);
+  deleteProductDialogVisible.value = false;
+  ElMessage.success('产品删除成功');
+};
+
+const cancelDeleteProduct = () => {
+  deleteProductDialogVisible.value = false;
+};
+
+const closeProductDialog = () => {
+  viewingProducts.value = false;
+  currentDeviceProducts.value = [];
+  currentDeviceId.value = null;
+};
+
 const filteredDevices = computed(() => {
-  return devices.value.filter(device => device.name.includes(searchQuery.value) || device.product.includes(searchQuery.value));
+  return devices.value.filter(device => device.name.includes(searchQuery.value) || device.serialNumber.includes(searchQuery.value));
 });
 
 onMounted(fetchDevices);

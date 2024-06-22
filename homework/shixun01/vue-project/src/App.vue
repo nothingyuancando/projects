@@ -1,6 +1,4 @@
 <script setup>
-import LoginVue from '@/views/Login.vue'
-import HomeVue from '@/views/Home.vue'
 </script>
 
 <template>

@@ -5,163 +5,131 @@
         <h2>产品管理</h2>
       </div>
 
-      <el-input v-model="searchQuery" placeholder="输入产品名称查询" class="input-with-select">
-        <!-- 注意：这里不使用 slot="append"，因为我们将在外部添加按钮 -->
-      </el-input>
+      <div class="search-section">
+        <el-input v-model="searchQuery" placeholder="输入产品名称查询" class="input-with-select"></el-input>
+      </div>
       <div style="display: flex; justify-content: flex-end;">
-        <el-button plain @click="dialogFormVisible = true">
-          新增产品
-        </el-button>
+        <el-button plain @click="openAddDialog">新增产品</el-button>
       </div>
 
+      <el-dialog v-model="dialogFormVisible" :title="isEditing ? '编辑产品' : '添加产品'" width="500">
+        <el-form :model="form" ref="formRef" label-width="120px">
+          <el-form-item label="产品名称" :label-width="formLabelWidth" prop="name">
+            <el-input v-model="form.name" autocomplete="off" />
+          </el-form-item>
+          <el-form-item label="耗能" :label-width="formLabelWidth" prop="energyConsumption">
+            <el-input v-model="form.energyConsumption" autocomplete="off" />
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <div class="dialog-footer">
+            <el-button @click="dialogFormVisible = false">取消</el-button>
+            <el-button type="primary" @click="isEditing ? updateProduct() : addProduct()">
+              确认
+            </el-button>
+          </div>
+        </template>
+      </el-dialog>
 
-      <el-dialog v-model="dialogFormVisible" title="添加产品" width="500">
-          <el-form :model="form">
-            <el-form-item label="产品名称" :label-width="formLabelWidth">
-              <el-input v-model="form.name" autocomplete="off" />
-            </el-form-item>
-            <el-form-item label="耗能" :label-width="formLabelWidth">
-              <el-input v-model="form.name" autocomplete="off" />
-            </el-form-item>
-          </el-form>
-          <template #footer>
-            <div class="dialog-footer">
-              <el-button @click="dialogFormVisible = false">Cancel</el-button>
-              <el-button type="primary" @click="dialogFormVisible = false">
-                Confirm
-              </el-button>
-            </div>
-          </template>
-        </el-dialog>
+      <hr/>
 
-<hr/>
       <div class="list-section">
         <el-table :data="filteredProducts" style="width: 100%">
           <el-table-column prop="name" label="产品名称"></el-table-column>
+          <el-table-column prop="energyConsumption" label="耗能"></el-table-column>
           <el-table-column label="操作">
             <template #default="scope">
-              <el-button @click="editProduct(scope.row)" size="mini">编辑</el-button>
+              <el-button @click="openEditDialog(scope.row)" size="mini">编辑</el-button>
               <el-button @click="deleteProduct(scope.row.id)" size="mini" type="danger">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
       </div>
     </el-card>
-    <el-dialog :visible.sync="isEditing" title="编辑产品">
-      <el-form :model="editedProduct" ref="editProductForm" label-width="120px">
-        <el-form-item label="编辑产品名称">
-          <el-input v-model="editedProduct.name"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="cancelEdit">取消</el-button>
-        <el-button type="primary" @click="updateProduct">更新</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
-<script setup lang="js">
-// import {ref, computed, onMounted} from 'vue';
-// import {ElMessageBox, ElMessage} from 'element-plus';
-//
-// const searchQuery = ref('');
-// const newProduct = ref({name: ''});
-// const products = ref([]);
-// const isEditing = ref(false);
-// const editedProduct = ref(null);
-//
-// const fetchProducts = async () => {
-//   const productData = await fetch('/api/products').then(res => res.json());
-//   products.value = productData;
-// };
-//
-// const searchProducts = () => {
-//   fetchProducts();
-// };
-//
-// const addProduct = async () => {
-//   if (newProduct.value.name && !products.value.some(p => p.name === newProduct.value.name)) {
-//     await fetch('/api/products', {
-//       method: 'POST',
-//       headers: {'Content-Type': 'application/json'},
-//       body: JSON.stringify(newProduct.value)
-//     });
-//     newProduct.value.name = '';
-//     fetchProducts();
-//   } else {
-//     ElMessage.error('产品名称不能为空或重复');
-//   }
-// };
-//
-// const editProduct = (product) => {
-//   isEditing.value = true;
-//   editedProduct.value = {...product};
-// };
-//
-// const updateProduct = async () => {
-//   if (editedProduct.value.name && !products.value.some(p => p.name === editedProduct.value.name && p.id !== editedProduct.value.id)) {
-//     await fetch(`/api/products/${editedProduct.value.id}`, {
-//       method: 'PUT',
-//       headers: {'Content-Type': 'application/json'},
-//       body: JSON.stringify(editedProduct.value)
-//     });
-//     cancelEdit();
-//     fetchProducts();
-//   } else {
-//     ElMessage.error('产品名称不能为空或重复');
-//   }
-// };
-//
-// const cancelEdit = () => {
-//   isEditing.value = false;
-//   editedProduct.value = null;
-// };
-//
-// const deleteProduct = async (id) => {
-//   const hasOrders = await fetch(`/api/orders?productId=${id}`).then(res => res.json()).then(data => data.length > 0);
-//   if (!hasOrders) {
-//     ElMessageBox.confirm('此操作将永久删除该产品, 是否继续?', '提示', {
-//       confirmButtonText: '确定',
-//       cancelButtonText: '取消',
-//       type: 'warning',
-//     }).then(async () => {
-//       await fetch(`/api/products/${id}`, {method: 'DELETE'});
-//       fetchProducts();
-//     }).catch(() => {
-//       ElMessage.info('已取消删除');
-//     });
-//   } else {
-//     ElMessage.error('该产品存在关联订单，不能删除');
-//   }
-// };
-//
-// const filteredProducts = computed(() => {
-//   return products.value.filter(product => product.name.includes(searchQuery.value));
-// });
-//
-// onMounted(fetchProducts);
+<script setup>
+import { reactive, ref, computed, onMounted } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
 
-
-
-import { reactive, ref } from 'vue'
-
-const dialogFormVisible = ref(false)
-const formLabelWidth = '140px'
+const searchQuery = ref('');
+const dialogFormVisible = ref(false);
+const isEditing = ref(false);
+const formLabelWidth = '140px';
 
 const form = reactive({
+  id: null,
   name: '',
-  region: '',
-  date1: '',
-  date2: '',
-  delivery: false,
-  type: [],
-  resource: '',
-  desc: '',
-})
+  energyConsumption: ''
+});
 
+const products = ref([
+  { id: 1, name: '产品A', energyConsumption: '100W' },
+  { id: 2, name: '产品B', energyConsumption: '150W' },
+  { id: 3, name: '产品C', energyConsumption: '200W' }
+]);
 
+const fetchProducts = async () => {
+  // 模拟API调用
+  // const productData = await fetch('/api/products').then(res => res.json());
+  // products.value = productData;
+};
 
+const filteredProducts = computed(() => {
+  return products.value.filter(product => product.name.includes(searchQuery.value));
+});
+
+const openAddDialog = () => {
+  resetForm();
+  isEditing.value = false;
+  dialogFormVisible.value = true;
+};
+
+const openEditDialog = (product) => {
+  Object.assign(form, product);
+  isEditing.value = true;
+  dialogFormVisible.value = true;
+};
+
+const addProduct = () => {
+  form.id = Date.now();
+  products.value.push({ ...form });
+  ElMessage.success('产品添加成功');
+  dialogFormVisible.value = false;
+  resetForm();
+};
+
+const updateProduct = () => {
+  const index = products.value.findIndex(prod => prod.id === form.id);
+  if (index !== -1) {
+    products.value[index] = { ...form };
+    ElMessage.success('产品更新成功');
+    dialogFormVisible.value = false;
+    resetForm();
+  }
+};
+
+const deleteProduct = async (id) => {
+  ElMessageBox.confirm('此操作将永久删除该产品, 是否继续?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  }).then(() => {
+    products.value = products.value.filter(prod => prod.id !== id);
+    ElMessage.success('产品删除成功');
+  }).catch(() => {
+    ElMessage.info('已取消删除');
+  });
+};
+
+const resetForm = () => {
+  form.id = null;
+  form.name = '';
+  form.energyConsumption = '';
+};
+
+onMounted(fetchProducts);
 </script>
 
 <style scoped lang="scss">
@@ -181,10 +149,6 @@ const form = reactive({
 }
 
 .search-section {
-  margin-bottom: 20px;
-}
-
-.add-section {
   margin-bottom: 20px;
 }
 

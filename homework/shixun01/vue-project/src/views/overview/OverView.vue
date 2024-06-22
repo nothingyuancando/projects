@@ -9,6 +9,7 @@
           <el-card shadow="hover">
             <div slot="header" class="clearfix">
               <span>设备运行情况</span>
+              <el-button @click="refreshDeviceChart" type="primary" size="mini" style="float: right;">刷新</el-button>
             </div>
             <div ref="deviceChart" class="chart"></div>
           </el-card>
@@ -17,6 +18,7 @@
           <el-card shadow="hover">
             <div slot="header" class="clearfix">
               <span>工厂生产效益情况</span>
+              <el-button @click="switchEfficiencyChartType" type="primary" size="mini" style="float: right;">切换图表</el-button>
             </div>
             <div ref="efficiencyChart" class="chart"></div>
           </el-card>
@@ -27,6 +29,32 @@
               <span>订单统计情况</span>
             </div>
             <div ref="orderChart" class="chart"></div>
+          </el-card>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20" style="margin-top: 20px;">
+        <el-col :span="8">
+          <el-card shadow="hover">
+            <div slot="header" class="clearfix">
+              <span>工厂能耗情况</span>
+            </div>
+            <div ref="energyChart" class="chart"></div>
+          </el-card>
+        </el-col>
+        <el-col :span="8">
+          <el-card shadow="hover">
+            <div slot="header" class="clearfix">
+              <span>员工绩效情况</span>
+            </div>
+            <div ref="performanceChart" class="chart"></div>
+          </el-card>
+        </el-col>
+        <el-col :span="8">
+          <el-card shadow="hover">
+            <div slot="header" class="clearfix">
+              <span>原材料库存情况</span>
+            </div>
+            <div ref="inventoryChart" class="chart"></div>
           </el-card>
         </el-col>
       </el-row>
@@ -41,9 +69,14 @@ import * as echarts from 'echarts';
 const deviceChart = ref(null);
 const efficiencyChart = ref(null);
 const orderChart = ref(null);
+const energyChart = ref(null);
+const performanceChart = ref(null);
+const inventoryChart = ref(null);
+let efficiencyChartType = ref('line');
 
 onMounted(() => {
   initCharts();
+  setInterval(refreshDeviceChart, 60000); // 每分钟刷新一次设备运行情况图表
 });
 
 const initCharts = () => {
@@ -73,7 +106,7 @@ const initCharts = () => {
     yAxis: {},
     series: [{
       name: '生产效益',
-      type: 'line',
+      type: efficiencyChartType.value,
       data: [150, 230, 224, 218, 135, 147]
     }]
   };
@@ -94,12 +127,78 @@ const initCharts = () => {
     }]
   };
   orderChartInstance.setOption(orderChartOption);
+
+  // Initialize Energy Consumption Chart
+  const energyChartInstance = echarts.init(energyChart.value);
+  const energyChartOption = {
+    title: { text: '工厂能耗情况' },
+    tooltip: {},
+    legend: { data: ['能耗'] },
+    xAxis: { data: ['1月', '2月', '3月', '4月', '5月', '6月'] },
+    yAxis: {},
+    series: [{
+      name: '能耗',
+      type: 'line',
+      data: [200, 180, 240, 210, 230, 250]
+    }]
+  };
+  energyChartInstance.setOption(energyChartOption);
+
+  // Initialize Employee Performance Chart
+  const performanceChartInstance = echarts.init(performanceChart.value);
+  const performanceChartOption = {
+    title: { text: '员工绩效情况' },
+    tooltip: {},
+    legend: { data: ['绩效'] },
+    xAxis: { data: ['1月', '2月', '3月', '4月', '5月', '6月'] },
+    yAxis: {},
+    series: [{
+      name: '绩效',
+      type: 'bar',
+      data: [80, 90, 85, 88, 92, 95]
+    }]
+  };
+  performanceChartInstance.setOption(performanceChartOption);
+
+  // Initialize Inventory Statistics Chart
+  const inventoryChartInstance = echarts.init(inventoryChart.value);
+  const inventoryChartOption = {
+    title: { text: '原材料库存情况' },
+    tooltip: {},
+    legend: { data: ['库存'] },
+    xAxis: { data: ['1月', '2月', '3月', '4月', '5月', '6月'] },
+    yAxis: {},
+    series: [{
+      name: '库存',
+      type: 'line',
+      data: [300, 320, 310, 305, 330, 340]
+    }]
+  };
+  inventoryChartInstance.setOption(inventoryChartOption);
+};
+
+const refreshDeviceChart = () => {
+  // Simulate data refresh
+  const deviceChartInstance = echarts.init(deviceChart.value);
+  const newData = Array.from({ length: 5 }, () => Math.floor(Math.random() * 50));
+  deviceChartInstance.setOption({
+    series: [{
+      data: newData
+    }]
+  });
+};
+
+const switchEfficiencyChartType = () => {
+  efficiencyChartType.value = efficiencyChartType.value === 'line' ? 'bar' : 'line';
+  initCharts();
 };
 </script>
 
 <style scoped lang="scss">
 .dashboard-container {
-  height: 100vh;
+  width: 1300px;
+  height: 800px;
+  margin: 0 auto;
 }
 
 .chart {
