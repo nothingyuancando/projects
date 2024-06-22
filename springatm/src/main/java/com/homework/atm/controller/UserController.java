@@ -46,7 +46,6 @@ public class UserController {
 
         userService.page(pageInfo, queryWrapper);
         return R.success(pageInfo);
-
     }
 
     @PutMapping
