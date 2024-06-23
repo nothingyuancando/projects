@@ -58,8 +58,9 @@
   </div>
 </template>
 
+
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
 
 const newOrder = ref({ productName: '', quantity: 0 });
@@ -70,29 +71,28 @@ const isCompleting = ref(false);
 const completeOrderData = ref({ id: null, remark: '', remarkRequired: false });
 
 const fetchOrders = async () => {
-  const orderData = await fetch('/api/orders').then(res => res.json());
+  // 示例数据
+  const orderData = [
+    { id: 1, productName: '产品A', quantity: 10, status: '未接单' },
+    { id: 2, productName: '产品B', quantity: 20, status: '已接单' },
+    { id: 3, productName: '产品C', quantity: 30, status: '生产中' }
+  ];
   orders.value = orderData;
 };
 
 const createOrder = async () => {
-  await fetch('/api/orders', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...newOrder.value, status: '未接单', source: '线下' })
+  orders.value.push({
+    id: orders.value.length + 1,
+    ...newOrder.value,
+    status: '未接单'
   });
   newOrder.value = { productName: '', quantity: 0 };
-  fetchOrders();
 };
 
 const acceptOrder = async (order) => {
-  const availableCapacity = await fetch(`/api/capacity?productName=${order.productName}`).then(res => res.json());
+  const availableCapacity = 100; // 示例数据，实际应从API获取
   if (availableCapacity >= order.quantity) {
-    await fetch(`/api/orders/${order.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...order, status: '已接单' })
-    });
-    fetchOrders();
+    order.status = '已接单';
   } else {
     ElMessage.error('可用产能不足，无法接单');
   }
@@ -105,14 +105,13 @@ const rejectOrder = (order) => {
 
 const confirmReject = async () => {
   if (rejectOrderData.value.remark) {
-    await fetch(`/api/orders/${rejectOrderData.value.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: '已拒绝', remark: rejectOrderData.value.remark })
-    });
+    const order = orders.value.find(o => o.id === rejectOrderData.value.id);
+    if (order) {
+      order.status = '已拒绝';
+      order.remark = rejectOrderData.value.remark;
+    }
     isRejecting.value = false;
     rejectOrderData.value = { id: null, remark: '' };
-    fetchOrders();
   } else {
     ElMessage.error('拒绝订单需填写备注');
   }
@@ -130,22 +129,12 @@ const convertToPlan = async (order) => {
     inputType: 'date'
   });
   if (planDate) {
-    await fetch('/api/plans', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ orderId: order.id, startDate: planDate, status: '未启动' })
-    });
-    await fetch(`/api/orders/${order.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...order, status: '生产中' })
-    });
-    fetchOrders();
+    order.status = '生产中';
   }
 };
 
 const completeOrder = async (order) => {
-  const completedQuantity = await fetch(`/api/completedQuantity?orderId=${order.id}`).then(res => res.json());
+  const completedQuantity = 10; // 示例数据，实际应从API获取
   completeOrderData.value.id = order.id;
   completeOrderData.value.remarkRequired = completedQuantity < order.quantity;
   isCompleting.value = true;
@@ -153,19 +142,13 @@ const completeOrder = async (order) => {
 
 const confirmComplete = async () => {
   if (!completeOrderData.value.remarkRequired || completeOrderData.value.remark) {
-    await fetch(`/api/orders/${completeOrderData.value.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: '已完成', remark: completeOrderData.value.remark })
-    });
-    await fetch(`/api/plans?orderId=${completeOrderData.value.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: '已完成' })
-    });
+    const order = orders.value.find(o => o.id === completeOrderData.value.id);
+    if (order) {
+      order.status = '已完成';
+      order.remark = completeOrderData.value.remark;
+    }
     isCompleting.value = false;
     completeOrderData.value = { id: null, remark: '', remarkRequired: false };
-    fetchOrders();
   } else {
     ElMessage.error('完成订单需填写备注');
   }
@@ -178,6 +161,7 @@ const cancelComplete = () => {
 
 onMounted(fetchOrders);
 </script>
+
 
 <style scoped lang="scss">
 .order-management {

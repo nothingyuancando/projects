@@ -24,7 +24,10 @@
             </template>
           </el-table-column>
         </el-table>
+
+
       </div>
+
     </el-card>
 
     <el-dialog v-model="dialogFormVisible" :title="isEdit ? '编辑员工' : '新增员工'" width="500">
@@ -200,4 +203,7 @@ const validateForm = () => {
 .el-table {
   width: 100%;
 }
+
+
+
 </style>

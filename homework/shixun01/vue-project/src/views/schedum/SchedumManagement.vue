@@ -11,7 +11,7 @@
               <el-option
                   v-for="plan in startedPlans"
                   :key="plan.id"
-                  :label="plan.id"
+                  :label="`计划编号: ${plan.id}, 开始日期: ${plan.startDate}`"
                   :value="plan.id"
               ></el-option>
             </el-select>
@@ -32,43 +32,85 @@
         </el-form>
       </div>
       <div class="work-order-list-section">
-        <el-table :data="workOrders" style="width: 100%">
+        <el-table :data="paginatedWorkOrders" style="width: 100%">
           <el-table-column prop="planId" label="生产计划编号"></el-table-column>
           <el-table-column prop="deviceId" label="设备编号"></el-table-column>
           <el-table-column prop="status" label="工单状态"></el-table-column>
           <el-table-column label="操作">
             <template #default="scope">
               <el-button v-if="scope.row.status === '未启动'" @click="startWorkOrder(scope.row)" size="mini">启动</el-button>
-              <el-button v-if="scope.row.status === '未启动'" @click="deleteWorkOrder(scope.row)" size="mini" type="danger">删除</el-button>
+              <el-button v-if="scope.row.status === '未启动'" @click="confirmDeleteWorkOrder(scope.row)" size="mini" type="danger">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
+        <el-pagination
+            layout="prev, pager, next"
+            :total="totalWorkOrders"
+            :page-size="pageSize"
+            @current-change="handlePageChange"
+        ></el-pagination>
       </div>
     </el-card>
+    <el-dialog :visible.sync="isConfirmingDelete" title="确认删除">
+      <span>确定要删除该工单吗？</span>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancelDelete">取消</el-button>
+        <el-button type="danger" @click="deleteWorkOrder">删除</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
 
 const newWorkOrder = ref({ planId: null, deviceId: null });
 const workOrders = ref([]);
 const startedPlans = ref([]);
 const devices = ref([]);
+const isConfirmingDelete = ref(false);
+const workOrderToDelete = ref(null);
+
+const pageSize = ref(5);
+const currentPage = ref(1);
+
+const paginatedWorkOrders = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return workOrders.value.slice(start, end);
+});
+
+const totalWorkOrders = computed(() => workOrders.value.length);
+
+const handlePageChange = (page) => {
+  currentPage.value = page;
+};
 
 const fetchWorkOrders = async () => {
-  const workOrderData = await fetch('/api/work-orders').then(res => res.json());
+  // 示例数据，实际应从API获取
+  const workOrderData = [
+    { id: 1, planId: 1, deviceId: 1, status: '未启动' },
+    { id: 2, planId: 2, deviceId: 2, status: '未启动' }
+  ];
   workOrders.value = workOrderData;
 };
 
 const fetchStartedPlans = async () => {
-  const planData = await fetch('/api/plans?status=已启动').then(res => res.json());
+  // 示例数据，实际应从API获取
+  const planData = [
+    { id: 1, startDate: '2024-06-01', status: '已启动' },
+    { id: 2, startDate: '2024-06-02', status: '已启动' }
+  ];
   startedPlans.value = planData;
 };
 
 const fetchDevices = async () => {
-  const deviceData = await fetch('/api/devices').then(res => res.json());
+  // 示例数据，实际应从API获取
+  const deviceData = [
+    { id: 1, name: '设备A' },
+    { id: 2, name: '设备B' }
+  ];
   devices.value = deviceData;
 };
 
@@ -77,10 +119,11 @@ const createWorkOrder = async () => {
     ElMessage.error('请选择生产计划和设备');
     return;
   }
-  await fetch('/api/work-orders', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...newWorkOrder.value, status: '未启动' })
+  workOrders.value.push({
+    id: workOrders.value.length + 1,
+    planId: newWorkOrder.value.planId,
+    deviceId: newWorkOrder.value.deviceId,
+    status: '未启动'
   });
   newWorkOrder.value.planId = null;
   newWorkOrder.value.deviceId = null;
@@ -88,24 +131,30 @@ const createWorkOrder = async () => {
 };
 
 const startWorkOrder = async (workOrder) => {
-  await fetch(`/api/work-orders/${workOrder.id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...workOrder, status: '已启动' })
-  });
-  fetchWorkOrders();
+  workOrder.status = '已启动';
+  ElMessage.success('工单已启动');
 };
 
-const deleteWorkOrder = async (workOrder) => {
-  const planWorkOrders = workOrders.value.filter(wo => wo.planId === workOrder.planId);
-  if (planWorkOrders.length <= 1) {
-    ElMessage.error('每条已启动计划中必须有一条以上工单记录');
-    return;
+const confirmDeleteWorkOrder = (workOrder) => {
+  workOrderToDelete.value = workOrder;
+  isConfirmingDelete.value = true;
+};
+
+const deleteWorkOrder = async () => {
+  if (workOrderToDelete.value) {
+    const index = workOrders.value.findIndex(wo => wo.id === workOrderToDelete.value.id);
+    if (index !== -1) {
+      workOrders.value.splice(index, 1);
+      ElMessage.success('工单已删除');
+    }
   }
-  await fetch(`/api/work-orders/${workOrder.id}`, {
-    method: 'DELETE'
-  });
-  fetchWorkOrders();
+  isConfirmingDelete.value = false;
+  workOrderToDelete.value = null;
+};
+
+const cancelDelete = () => {
+  isConfirmingDelete.value = false;
+  workOrderToDelete.value = null;
 };
 
 onMounted(() => {
@@ -114,7 +163,6 @@ onMounted(() => {
   fetchDevices();
 });
 </script>
-
 <style scoped lang="scss">
 .schedum-management {
   padding: 20px;
@@ -146,5 +194,9 @@ onMounted(() => {
 
 .el-table {
   width: 100%;
+}
+
+.dialog-footer {
+  text-align: right;
 }
 </style>

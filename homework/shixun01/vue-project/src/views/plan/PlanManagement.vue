@@ -11,7 +11,7 @@
               <el-option
                   v-for="order in productionOrders"
                   :key="order.id"
-                  :label="order.id"
+                  :label="`订单编号: ${order.id}, 产品: ${order.productName}`"
                   :value="order.id"
               ></el-option>
             </el-select>
@@ -29,12 +29,19 @@
           <el-table-column label="操作">
             <template #default="scope">
               <el-button v-if="scope.row.status === '未启动'" @click="startPlan(scope.row)" size="mini">启动</el-button>
-              <el-button v-if="scope.row.status === '未启动'" @click="deletePlan(scope.row)" size="mini" type="danger">删除</el-button>
+              <el-button v-if="scope.row.status === '未启动'" @click="confirmDeletePlan(scope.row)" size="mini" type="danger">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
       </div>
     </el-card>
+    <el-dialog :visible.sync="isConfirmingDelete" title="确认删除">
+      <span>确定要删除该生产计划吗？</span>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancelDelete">取消</el-button>
+        <el-button type="danger" @click="deletePlan">删除</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -45,14 +52,24 @@ import { ElMessageBox, ElMessage } from 'element-plus';
 const newPlan = ref({ orderId: null });
 const plans = ref([]);
 const productionOrders = ref([]);
+const isConfirmingDelete = ref(false);
+const planToDelete = ref(null);
 
 const fetchPlans = async () => {
-  const planData = await fetch('/api/plans').then(res => res.json());
+  // 示例数据，实际应从API获取
+  const planData = [
+    { id: 1, orderId: 1, startDate: '2024-06-01', status: '未启动' },
+    { id: 2, orderId: 2, startDate: '2024-06-02', status: '未启动' }
+  ];
   plans.value = planData;
 };
 
 const fetchProductionOrders = async () => {
-  const orderData = await fetch('/api/orders?status=生产中').then(res => res.json());
+  // 示例数据，实际应从API获取
+  const orderData = [
+    { id: 1, productName: '产品A', status: '生产中' },
+    { id: 2, productName: '产品B', status: '生产中' }
+  ];
   productionOrders.value = orderData;
 };
 
@@ -61,39 +78,40 @@ const createPlan = async () => {
     ElMessage.error('请选择订单编号');
     return;
   }
-  await fetch('/api/plans', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ orderId: newPlan.value.orderId, status: '未启动', startDate: new Date().toISOString().split('T')[0] })
+  plans.value.push({
+    id: plans.value.length + 1,
+    orderId: newPlan.value.orderId,
+    startDate: new Date().toISOString().split('T')[0],
+    status: '未启动'
   });
   newPlan.value.orderId = null;
-  fetchPlans();
 };
 
 const startPlan = async (plan) => {
-  await fetch(`/api/plans/${plan.id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...plan, status: '已启动' })
-  });
-  await fetch('/api/work-orders', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ planId: plan.id, status: '未开始', deviceId: null })
-  });
-  fetchPlans();
+  plan.status = '已启动';
+  ElMessage.success('生产计划已启动');
 };
 
-const deletePlan = async (plan) => {
-  const orderPlans = plans.value.filter(p => p.orderId === plan.orderId);
-  if (orderPlans.length <= 1) {
-    ElMessage.error('每条生产中订单必须有一条以上生产计划');
-    return;
+const confirmDeletePlan = (plan) => {
+  planToDelete.value = plan;
+  isConfirmingDelete.value = true;
+};
+
+const deletePlan = async () => {
+  if (planToDelete.value) {
+    const index = plans.value.findIndex(p => p.id === planToDelete.value.id);
+    if (index !== -1) {
+      plans.value.splice(index, 1);
+      ElMessage.success('生产计划已删除');
+    }
   }
-  await fetch(`/api/plans/${plan.id}`, {
-    method: 'DELETE'
-  });
-  fetchPlans();
+  isConfirmingDelete.value = false;
+  planToDelete.value = null;
+};
+
+const cancelDelete = () => {
+  isConfirmingDelete.value = false;
+  planToDelete.value = null;
 };
 
 onMounted(() => {
@@ -101,6 +119,7 @@ onMounted(() => {
   fetchProductionOrders();
 });
 </script>
+
 
 <style scoped lang="scss">
 .plan-management {
@@ -134,4 +153,9 @@ onMounted(() => {
 .el-table {
   width: 100%;
 }
+
+.dialog-footer {
+  text-align: right;
+}
 </style>
+

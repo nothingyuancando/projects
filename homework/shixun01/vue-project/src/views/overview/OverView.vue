@@ -33,28 +33,16 @@
         </el-col>
       </el-row>
       <el-row :gutter="20" style="margin-top: 20px;">
-        <el-col :span="8">
+        <el-col :span="24">
           <el-card shadow="hover">
             <div slot="header" class="clearfix">
-              <span>工厂能耗情况</span>
+              <span>工厂概览信息</span>
             </div>
-            <div ref="energyChart" class="chart"></div>
-          </el-card>
-        </el-col>
-        <el-col :span="8">
-          <el-card shadow="hover">
-            <div slot="header" class="clearfix">
-              <span>员工绩效情况</span>
+            <div class="overview-text">
+              <p>工厂概览展示了当前设备的运行状态、生产效益和订单统计情况。</p>
+              <p>通过这些信息，您可以更好地了解工厂的整体运作情况，及时进行调整和优化。</p>
+              <p>定期刷新设备运行情况，切换生产效益图表类型以查看不同的展示效果。</p>
             </div>
-            <div ref="performanceChart" class="chart"></div>
-          </el-card>
-        </el-col>
-        <el-col :span="8">
-          <el-card shadow="hover">
-            <div slot="header" class="clearfix">
-              <span>原材料库存情况</span>
-            </div>
-            <div ref="inventoryChart" class="chart"></div>
           </el-card>
         </el-col>
       </el-row>
@@ -69,9 +57,6 @@ import * as echarts from 'echarts';
 const deviceChart = ref(null);
 const efficiencyChart = ref(null);
 const orderChart = ref(null);
-const energyChart = ref(null);
-const performanceChart = ref(null);
-const inventoryChart = ref(null);
 let efficiencyChartType = ref('line');
 
 onMounted(() => {
@@ -127,54 +112,6 @@ const initCharts = () => {
     }]
   };
   orderChartInstance.setOption(orderChartOption);
-
-  // Initialize Energy Consumption Chart
-  const energyChartInstance = echarts.init(energyChart.value);
-  const energyChartOption = {
-    title: { text: '工厂能耗情况' },
-    tooltip: {},
-    legend: { data: ['能耗'] },
-    xAxis: { data: ['1月', '2月', '3月', '4月', '5月', '6月'] },
-    yAxis: {},
-    series: [{
-      name: '能耗',
-      type: 'line',
-      data: [200, 180, 240, 210, 230, 250]
-    }]
-  };
-  energyChartInstance.setOption(energyChartOption);
-
-  // Initialize Employee Performance Chart
-  const performanceChartInstance = echarts.init(performanceChart.value);
-  const performanceChartOption = {
-    title: { text: '员工绩效情况' },
-    tooltip: {},
-    legend: { data: ['绩效'] },
-    xAxis: { data: ['1月', '2月', '3月', '4月', '5月', '6月'] },
-    yAxis: {},
-    series: [{
-      name: '绩效',
-      type: 'bar',
-      data: [80, 90, 85, 88, 92, 95]
-    }]
-  };
-  performanceChartInstance.setOption(performanceChartOption);
-
-  // Initialize Inventory Statistics Chart
-  const inventoryChartInstance = echarts.init(inventoryChart.value);
-  const inventoryChartOption = {
-    title: { text: '原材料库存情况' },
-    tooltip: {},
-    legend: { data: ['库存'] },
-    xAxis: { data: ['1月', '2月', '3月', '4月', '5月', '6月'] },
-    yAxis: {},
-    series: [{
-      name: '库存',
-      type: 'line',
-      data: [300, 320, 310, 305, 330, 340]
-    }]
-  };
-  inventoryChartInstance.setOption(inventoryChartOption);
 };
 
 const refreshDeviceChart = () => {
@@ -205,4 +142,15 @@ const switchEfficiencyChartType = () => {
   width: 100%;
   height: 400px;
 }
+
+.overview-text {
+  padding: 20px;
+  font-size: 16px;
+  line-height: 1.5;
+
+  p {
+    margin: 10px 0;
+  }
+}
 </style>
+

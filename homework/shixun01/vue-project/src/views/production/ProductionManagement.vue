@@ -34,7 +34,7 @@
       <hr/>
 
       <div class="list-section">
-        <el-table :data="filteredProducts" style="width: 100%">
+        <el-table :data="paginatedProducts" style="width: 100%">
           <el-table-column prop="name" label="产品名称"></el-table-column>
           <el-table-column prop="energyConsumption" label="耗能"></el-table-column>
           <el-table-column label="操作">
@@ -44,6 +44,16 @@
             </template>
           </el-table-column>
         </el-table>
+        <div class="pagination-container">
+          <el-pagination
+              background
+              layout="prev, pager, next"
+              :total="filteredProducts.length"
+              :page-size="pageSize"
+              :current-page.sync="currentPage"
+              @current-change="handlePageChange">
+          </el-pagination>
+        </div>
       </div>
     </el-card>
   </div>
@@ -79,6 +89,19 @@ const fetchProducts = async () => {
 const filteredProducts = computed(() => {
   return products.value.filter(product => product.name.includes(searchQuery.value));
 });
+
+const pageSize = ref(10); // 每页显示的产品数
+const currentPage = ref(1);
+
+const paginatedProducts = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return filteredProducts.value.slice(start, end);
+});
+
+const handlePageChange = (page) => {
+  currentPage.value = page;
+};
 
 const openAddDialog = () => {
   resetForm();
@@ -158,5 +181,11 @@ onMounted(fetchProducts);
 
 .el-table {
   width: 100%;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
 </style>
