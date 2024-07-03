@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.mapper.EquipmentMapper">
+
+    <resultMap id="BaseResultMap" type="com.spring.pojo.Equipment">
+            <id property="equipmentId" column="equipment_id" jdbcType="INTEGER"/>
+            <result property="factoryId" column="factory_id" jdbcType="INTEGER"/>
+            <result property="equipmentStates" column="equipment_states" jdbcType="INTEGER"/>
+            <result property="equipmentName" column="equipment_name" jdbcType="VARCHAR"/>
+            <result property="serialNumber" column="serial_number" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        equipment_id,factory_id,equipment_states,
+        equipment_name,serial_number
+    </sql>
+    <update id="updateByequipmentId">
+        UPDATE equipment
+        SET equipment_name = #{equipmentName},factory_id= #{factoryId},equipment_states = #{equipmentStates},serial_number = #{serialNumber}
+        WHERE equipment_id = #{equipmentId}
+    </update>
+    <delete id="deleteByequipmentId">
+        DELETE FROM equipment
+        WHERE equipment_id = #{equipmentId}
+    </delete>
+    <select id="selectEquipment" resultType="com.spring.pojo.Equipment">
+        SELECT *
+        FROM equipment
+        WHERE factory_id = #{factoryId}
+    </select>
+    <select id="selectequipmentids" resultType="java.lang.Integer">
+        SELECT equipment_id
+        FROM equipment
+        WHERE factory_id = #{factoryId}
+    </select>
+    <select id="selectStates" resultType="java.lang.Integer">
+        SELECT equipment_states
+        FROM equipment
+        WHERE equipment_id = #{equipmentId}
+    </select>
+</mapper>

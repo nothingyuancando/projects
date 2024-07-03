@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.mapper.WorkorderMapper">
+
+    <resultMap id="BaseResultMap" type="com.spring.pojo.Workorder">
+            <id property="workorderId" column="workorder_id" jdbcType="INTEGER"/>
+            <result property="equipmentId" column="equipment_id" jdbcType="INTEGER"/>
+            <result property="productId" column="product_id" jdbcType="INTEGER"/>
+            <result property="produceNumber" column="produce_number" jdbcType="INTEGER"/>
+            <result property="starttime" column="starttime" jdbcType="TIMESTAMP"/>
+            <result property="endtime" column="endtime" jdbcType="TIMESTAMP"/>
+            <result property="workorderStates" column="workorder_states" jdbcType="INTEGER"/>
+            <result property="factoryid" column="factory_id" javaType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        workorder_id,equipment_id,product_id,
+        produce_number,starttime,endtime,
+        workorder_states,factory_id
+    </sql>
+    <insert id="insertworkorder">
+        INSERT INTO workorder
+            ( equipment_id, product_id, produce_number, starttime, endtime, workorder_states, factory_id )
+        VALUES  ( #{equipmentId}, #{productId}, #{produceNumber}, #{starttime}, #{endtime}, #{workorderStates}, #{factoryid} )
+    </insert>
+    <update id="updateStates">
+        UPDATE workorder
+        SET workorder_states = #{workorderstates}
+        WHERE workorder_id = #{workorderid}
+    </update>
+    <select id="queryWorkorderId" resultType="java.lang.Integer">
+        SELECT workorder_id
+        FROM workorder
+        WHERE workorder_id =
+              (SELECT MAX(workorder_id) FROM workorder WHERE factory_id = #{factoryId})
+    </select>
+    <select id="selectWorkorder" resultType="com.spring.pojo.Workorder">
+        SELECT *
+        FROM workorder
+        WHERE factory_id = #{factoryId}
+    </select>
+    <select id="selectYieldByProductId" resultType="java.lang.Integer">
+        SELECT produce_number
+        FROM workorder
+        WHERE product_id = #{productId}
+    </select>
+    <select id="queryWorkorderIds" resultType="java.lang.Integer">
+        SELECT workorder_id
+        FROM workorder
+        WHERE factory_id = #{factoryId}
+    </select>
+</mapper>

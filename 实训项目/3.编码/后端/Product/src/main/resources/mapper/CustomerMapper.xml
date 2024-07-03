@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.mapper.CustomerMapper">
+
+    <resultMap id="BaseResultMap" type="com.spring.pojo.Customer">
+            <id property="customerId" column="customer_id" jdbcType="INTEGER"/>
+            <result property="customerName" column="customer_name" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="password" column="password" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        customer_id,customer_name,create_time,
+        password
+    </sql>
+    <select id="selectByCustomerId" resultType="com.spring.pojo.Customer">
+        SELECT *
+        FROM customer
+        WHERE customer_id = #{customerid}
+    </select>
+
+</mapper>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.mapper.OrderMapper">
+
+    <resultMap id="BaseResultMap" type="com.spring.pojo.Order">
+            <id property="orderId" column="order_id" jdbcType="INTEGER"/>
+            <result property="orderTime" column="order_time" jdbcType="TIMESTAMP"/>
+            <result property="orderCustomerid" column="order_customerID" jdbcType="INTEGER"/>
+            <result property="ordeStates" column="orde_states" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        order_id,order_time,order_customerID,
+        orde_states
+    </sql>
+    <insert id="insertorder">
+        INSERT INTO `order` ( order_time, order_customerID,orde_states )
+        VALUES (#{orderTime},#{orderCustomerid},#{ordeStates})
+    </insert>
+    <update id="updateByOrderId">
+        UPDATE `order`
+        SET orde_states = #{orderStates}
+        WHERE order_id = #{orderId}
+    </update>
+    <update id="updateOrderStates">
+        UPDATE `order`
+        SET orde_states = #{ordeStates}
+        WHERE order_id = #{orderId}
+    </update>
+    <delete id="deleteByorderId">
+        DELETE FROM `order`
+        WHERE order_id = #{orderID}
+    </delete>
+    <select id="selectorderId" resultType="java.lang.Integer">
+        SELECT order_id
+        FROM `order`
+        WHERE order_customerID = #{customerId}
+        ORDER BY order_time DESC LIMIT 1
+    </select>
+    <select id="queryorderId" resultType="java.lang.Integer">
+        SELECT order_id
+        FROM `order`
+        WHERE order_customerID = #{customerID}
+    </select>
+    <select id="queryordertime" resultType="java.util.Date">
+        SELECT order_time
+        FROM `order`
+        WHERE order_id = #{orderId}
+    </select>
+    <select id="queryorderstates" resultType="java.lang.Integer">
+        SELECT orde_states
+        FROM `order`
+        WHERE order_id = #{orderId}
+    </select>
+    <select id="queryOrder" resultType="com.spring.pojo.Order">
+        SELECT *
+        FROM `order`
+        WHERE order_id = #{orderID}
+    </select>
+    <select id="queryordersnumber" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM `order`
+        WHERE orde_states = #{orderstates}
+    </select>
+    <select id="selectOrders" resultType="com.spring.pojo.Order">
+        SELECT *
+        FROM `order`
+    </select>
+
+</mapper>

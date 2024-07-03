@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.mapper.WorkreportMapper">
+
+    <resultMap id="BaseResultMap" type="com.spring.pojo.Workreport">
+            <id property="workreportId" column="workreport_id" jdbcType="INTEGER"/>
+            <result property="workorderId" column="workorder_id" jdbcType="INTEGER"/>
+            <result property="producingStates" column="producing_states" jdbcType="INTEGER"/>
+            <result property="workreportTime" column="workreport_time" jdbcType="TIMESTAMP"/>
+            <result property="workHour" column="work_hour" jdbcType="VARCHAR"/>
+            <result property="processingNumber" column="processing_number" jdbcType="INTEGER"/>
+            <result property="qualifiyNumber" column="qualifiy_number" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        workreport_id,workorder_id,producing_states,
+        workreport_time,work_hour,processing_number,
+        qualifiy_number
+    </sql>
+    <select id="selectworkreport" resultType="com.spring.pojo.Workreport">
+        SELECT workreport.*
+        FROM workreport
+                 JOIN workorder ON workreport.workorder_id = workorder.workorder_id
+        WHERE workorder.factory_id = #{factoryId};
+    </select>
+    <select id="queryWorkreportIds" resultType="java.lang.Integer">
+        SELECT workreport_id
+        FROM workreport
+        WHERE workorder_id = #{workorderId}
+    </select>
+    <select id="queryreportdate" resultType="java.util.Date">
+        SELECT workreport_time
+        FROM workreport
+        WHERE workreport_id = #{workreportid}
+    </select>
+    <select id="queryprocessingnumber" resultType="java.lang.Integer">
+        SELECT processing_number
+        FROM workreport
+        WHERE workreport_id = #{workreportid}
+    </select>
+    <select id="queryqualifiynumber" resultType="java.lang.Integer">
+        SELECT qualifiy_number
+        FROM workreport
+        WHERE workreport_id = #{workreportid}
+    </select>
+</mapper>

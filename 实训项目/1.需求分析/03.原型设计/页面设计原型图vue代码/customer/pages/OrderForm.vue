@@ -1,0 +1,83 @@
+<template>
+  <div class="order-form">
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <h2>下单</h2>
+      </div>
+      <el-form :model="orderForm" ref="orderFormRef" label-width="120px">
+        <el-button type="primary" icon="el-icon-plus" @click="addProduct" style="margin-top: 10px;">添加产品</el-button>
+        <el-form-item label="订单产品" required>
+          <div v-for="(product, index) in orderForm.products" :key="index" class="product-item">
+            <el-input v-model="product.productName" placeholder="产品名称" style="width: 40%; margin-right: 10px;"></el-input>
+            <el-input-number v-model="product.quantity" :min="1" placeholder="数量" style="width: 20%; margin-right: 10px;"></el-input-number>
+            <el-button type="danger" icon="el-icon-minus" @click="removeProduct(index)">删除产品</el-button>
+          </div>
+
+        </el-form-item>
+        <el-form-item label="交货日期" required>
+          <el-date-picker v-model="orderForm.deliveryDate" type="date" placeholder="选择日期"></el-date-picker>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submitOrder">提交订单</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive } from 'vue';
+import { ElMessage } from 'element-plus';
+import { submitOrderToServer } from '@/api/customer';
+
+const orderForm = reactive({
+  products: [
+    { productName: '', quantity: 1 },
+  ],
+  deliveryDate: '',
+});
+
+const addProduct = () => {
+  orderForm.products.push({ productName: '', quantity: 1 });
+};
+
+const removeProduct = (index) => {
+  if (orderForm.products.length > 1) {
+    orderForm.products.splice(index, 1);
+  } else {
+    ElMessage.warning('订单至少包含一个产品');
+  }
+};
+
+const submitOrder = async () => {
+  try {
+    await submitOrderToServer(orderForm);
+    ElMessage.success('订单提交成功');
+    resetForm();
+  } catch (error) {
+    ElMessage.error('订单提交失败');
+  }
+};
+
+const resetForm = () => {
+  orderForm.products = [{ productName: '', quantity: 1 }];
+  orderForm.deliveryDate = '';
+};
+</script>
+
+<style scoped>
+.order-form {
+  padding: 20px;
+}
+
+.product-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.el-input,
+.el-input-number {
+  width: 100%;
+}
+</style>

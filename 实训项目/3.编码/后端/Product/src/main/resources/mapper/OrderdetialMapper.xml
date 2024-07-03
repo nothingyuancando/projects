@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.mapper.OrderdetialMapper">
+
+    <resultMap id="BaseResultMap" type="com.spring.pojo.Orderdetial">
+            <id property="orderdetialId" column="orderdetial_id" jdbcType="INTEGER"/>
+            <result property="productId" column="product_id" jdbcType="INTEGER"/>
+            <result property="amount" column="amount" jdbcType="INTEGER"/>
+            <result property="orderId" column="order_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        orderdetial_id,product_id,amount,
+        order_id
+    </sql>
+    <insert id="insertorderdetail">
+        INSERT INTO orderdetial (product_id,amount, order_id)
+        VALUES (#{productId},#{amount},#{orderId})
+    </insert>
+    <update id="updateByproductID">
+        UPDATE orderdetial
+        SET  amount = #{amount}
+        WHERE product_id = #{productID}
+    </update>
+    <delete id="deleteByorderId">
+        DELETE FROM orderdetial
+        WHERE order_id = #{orderID}
+    </delete>
+    <select id="queryOrders" resultType="com.spring.pojo.Orderdetial">
+        SELECT *
+        FROM orderdetial
+        WHERE order_id = #{orderID}
+    </select>
+</mapper>

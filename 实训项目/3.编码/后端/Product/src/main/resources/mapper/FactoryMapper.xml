@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.mapper.FactoryMapper">
+
+    <resultMap id="BaseResultMap" type="com.spring.pojo.Factory">
+            <id property="factoryId" column="factory_id" jdbcType="INTEGER"/>
+            <result property="factoryName" column="factory_name" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="password" column="password" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        factory_id,factory_name,create_time,
+        password
+    </sql>
+    <select id="getfactory" resultType="com.spring.pojo.Factory">
+        SELECT *
+        FROM factory
+    </select>
+    <select id="getfactoryids" resultType="java.lang.Integer">
+        SELECT factory_id
+        FROM factory
+    </select>
+    <select id="selectByfactoryId" resultType="com.spring.pojo.Factory">
+        SELECT *
+        FROM factory
+        WHERE factory_id = #{factoryid}
+    </select>
+</mapper>
