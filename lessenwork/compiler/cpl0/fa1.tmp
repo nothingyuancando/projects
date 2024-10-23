@@ -1,0 +1,67 @@
+Iput pl/0 file ?n
+0 const
+
+1 
+
+1     a = 10;
+
+1 
+
+1 var
+
+1 
+
+1     b,c;
+
+1 
+
+1     procedure p;
+
+1 
+
+1     begin
+
+3 
+
+3         c := b + a
+
+5 
+
+5     end;
+
+8 
+
+8 begin
+
+9 
+
+9     read(b);
+
+11 
+
+11     while b # 0 do
+
+15 
+
+15     begin
+
+15 
+
+15         call p;
+
+16 
+
+16         write(2 * c);
+
+21 
+
+21         read(b)
+
+23 
+
+23     end
+
+23 
+
+23 end.
+
